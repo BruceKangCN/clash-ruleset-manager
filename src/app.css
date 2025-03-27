@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@plugin 'flowbite/plugin';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source "../node_modules/flowbite-svelte/dist";
+
+body {
+    @apply bg-gray-100;
+    @apply text-black;
+}
+
+.dark {
+    body {
+        @apply bg-gray-900;
+        @apply text-gray-400;
+    }
+}
