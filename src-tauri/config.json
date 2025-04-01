@@ -1,4 +1,4 @@
 {
-    "rules_dir": "data/rules",
-    "out_dir": "data/out"
+    "rules_dir": "../data/rules",
+    "out_dir": "../data/out"
 }

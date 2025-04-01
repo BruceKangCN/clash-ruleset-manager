@@ -5,6 +5,10 @@ use thiserror::Error;
 pub enum ClashDashboardError {
     #[error("IO error")]
     IO(#[from] std::io::Error),
+    #[error("migration error")]
+    Migration(#[from] sqlx::migrate::MigrateError),
+    #[error("SQL error")]
+    SQL(#[from] sqlx::error::Error),
     #[error("JSON error")]
     Json(#[from] serde_json::Error),
     #[error("unknown error")]
