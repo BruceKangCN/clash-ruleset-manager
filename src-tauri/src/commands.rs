@@ -14,7 +14,7 @@ use crate::{
 #[tauri::command]
 #[tracing::instrument]
 pub async fn get_sets(state: State<'_, AppState>) -> Result<Vec<RuleSet>> {
-    let sql = "select * from rulesets order by order asc;";
+    let sql = "select * from rulesets order by ord asc;";
     let sets: Vec<RuleSet> = sqlx::query_as(sql).fetch_all(&state.pool).await?;
 
     Ok(sets)
@@ -22,28 +22,38 @@ pub async fn get_sets(state: State<'_, AppState>) -> Result<Vec<RuleSet>> {
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn remove_set(state: State<'_, AppState>, ruleset_id: u32) -> Result<()> {
+pub async fn remove_set(state: State<'_, AppState>, id: u32) -> Result<()> {
     let pool = &state.pool;
 
-    let sql = "delete from rulesets where id = ? returning order;";
-    let (deleted_order,): (u32,) = sqlx::query_as(sql).bind(ruleset_id).fetch_one(pool).await?;
+    let tx = pool.begin().await?;
 
-    let sql = "select * from rulesets where order > ?;";
+    let sql = "delete from rules where ruleset_id = ?;";
+    sqlx::query(sql).bind(id).execute(pool).await?;
+    let sql = "delete from rulesets where id = ? returning ord;";
+    let (deleted_order,): (u32,) = sqlx::query_as(sql).bind(id).fetch_one(pool).await?;
+    tracing::info!(id, deleted_order, "delete ruleset");
+
+    let sql = "select * from rulesets where ord > ?;";
     let sets: Vec<RuleSet> = sqlx::query_as(sql)
         .bind(deleted_order)
         .fetch_all(pool)
         .await?;
+    tracing::debug!(?sets, "find records to update");
 
     let updates = sets
         .into_iter()
         .map(|set| UpdateInfo {
             id: set.id,
-            new_order: set.order - 1,
+            new_order: set.ord - 1,
         })
         .collect();
     tracing::debug!(?updates, "create update info");
 
-    sort_sets(state, updates).await
+    sort_sets(state, updates).await?;
+
+    tx.commit().await?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -52,7 +62,7 @@ pub async fn sort_sets(state: State<'_, AppState>, updates: Vec<UpdateInfo>) -> 
     let pool = &state.pool;
 
     let tx = pool.begin().await?;
-    let sql = "update rulesets set order = ? where id = ?;";
+    let sql = "update rulesets set ord = ? where id = ?;";
     for info in updates {
         sqlx::query(sql)
             .bind(info.new_order)

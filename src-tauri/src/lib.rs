@@ -1,10 +1,11 @@
 use std::{fmt::Debug, path::Path};
 
+use cfg_if::cfg_if;
 use config::{AppState, load_config};
 use error::Result;
 use regex::Regex;
 use schema::{Rule, RuleSet};
-use sqlx::{Pool, Sqlite, sqlite::SqlitePoolOptions};
+use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use tokio::fs::read_dir;
 use tracing_subscriber::EnvFilter;
 use types::Node;
@@ -43,7 +44,14 @@ pub async fn run() {
 
 #[tracing::instrument]
 async fn setup_db(rules_dir: impl AsRef<Path> + Debug) -> Result<Pool<Sqlite>> {
-    let pool = SqlitePoolOptions::new().connect("sqlite::memory:").await?;
+    cfg_if! {
+        if #[cfg(debug_assertions)] {
+            let options = SqliteConnectOptions::new().filename("app.db").create_if_missing(true);
+        } else {
+            let options = SqliteConnectOptions::new().filename(":memory:");
+        }
+    }
+    let pool = SqlitePool::connect_with(options).await?;
     sqlx::migrate!().run(&pool).await?;
 
     let re = Regex::new(r"^(\d+)_(.*?)_(zz|gs|ym|ip)\.txt$").unwrap();
@@ -90,7 +98,7 @@ async fn create_ruleset_record(pool: &Pool<Sqlite>, order: u32, name: &str) -> R
         return Ok(ruleset);
     }
 
-    let sql = "insert into rulesets (order, name) values (?, ?) returning *;";
+    let sql = "insert into rulesets (ord, name) values (?, ?) returning *;";
     let ruleset = sqlx::query_as(sql)
         .bind(order)
         .bind(name)

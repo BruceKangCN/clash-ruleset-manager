@@ -3,13 +3,13 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ClashDashboardError {
-    #[error("IO error")]
+    #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
-    #[error("migration error")]
+    #[error("migration error: {0}")]
     Migration(#[from] sqlx::migrate::MigrateError),
-    #[error("SQL error")]
+    #[error("SQL error: {0}")]
     SQL(#[from] sqlx::error::Error),
-    #[error("JSON error")]
+    #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
     #[error("unknown error")]
     Unknown,

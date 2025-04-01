@@ -6,7 +6,7 @@ use sqlx::prelude::*;
 #[derive(Serialize, Deserialize, FromRow, Clone, Debug)]
 pub struct RuleSet {
     pub id: u32,
-    pub order: u32,
+    pub ord: u32,
     pub name: String,
 }
 
