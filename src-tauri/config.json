@@ -1,4 +1,5 @@
 {
     "rules_dir": "../data/rules",
-    "out_dir": "../data/out"
+    "out_dir": "../data/out",
+    "groups": ["gs", "zz", "ym", "ip"]
 }

@@ -13,7 +13,7 @@ create table rules
 (
     id integer not null primary key,
     ruleset_id integer not null,
-    type text not null default '',
+    group_type text not null default '',
     -- TODO: content can be split into multiple expr records, but it's too hard
     -- for flowbite svelte table, which do net have builtin pagination support.
     content text not null default '',

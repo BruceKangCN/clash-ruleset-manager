@@ -14,6 +14,6 @@ pub struct RuleSet {
 pub struct Rule {
     pub id: u32,
     pub ruleset_id: u32,
-    pub r#type: String,
+    pub group_type: String,
     pub content: String,
 }

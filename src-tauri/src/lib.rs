@@ -35,8 +35,9 @@ pub async fn run() {
             commands::get_sets,
             commands::remove_set,
             commands::sort_sets,
-            commands::get_set,
-            commands::add_set,
+            commands::create_set,
+            commands::get_set_group,
+            commands::update_set_group,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -77,10 +78,10 @@ async fn setup_db(rules_dir: impl AsRef<Path> + Debug) -> Result<Pool<Sqlite>> {
 
         let order: u32 = caps[1].parse().unwrap();
         let name = &caps[2];
-        let ty = &caps[3];
+        let group = &caps[3];
 
         let ruleset = create_ruleset_record(&pool, order, name).await?;
-        create_rule_record(&pool, ruleset.id, ty, entry.path()).await?;
+        create_rule_group(&pool, ruleset.id, group, entry.path()).await?;
     }
 
     tx.commit().await?;
@@ -109,18 +110,18 @@ async fn create_ruleset_record(pool: &Pool<Sqlite>, order: u32, name: &str) -> R
 }
 
 #[tracing::instrument]
-async fn create_rule_record(
+async fn create_rule_group(
     pool: &Pool<Sqlite>,
     ruleset_id: u32,
-    ty: &str,
+    group: &str,
     path: impl AsRef<Path> + Debug,
 ) -> Result<Rule> {
     let ruleset_content = tokio::fs::read_to_string(path).await?;
 
-    let sql = "insert into rules (ruleset_id, type, content) values (?, ?, ?) returning *;";
+    let sql = "insert into rules (ruleset_id, group_type, content) values (?, ?, ?) returning *;";
     let rule = sqlx::query_as(sql)
         .bind(ruleset_id)
-        .bind(ty)
+        .bind(group)
         .bind(&ruleset_content)
         .fetch_one(pool)
         .await?;

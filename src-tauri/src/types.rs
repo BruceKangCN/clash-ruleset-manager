@@ -1,10 +1,6 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
-
-use crate::schema::RuleSet;
-
-pub type RuleSetMap = HashMap<u32, RuleSet>;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct UpdateInfo {
@@ -14,7 +10,11 @@ pub struct UpdateInfo {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Node {
+    /// node type:
+    ///     - zz: self-hosted
+    ///     - sub: subscription
     pub r#type: Option<String>,
+
     pub name: String,
     pub url: String,
 }

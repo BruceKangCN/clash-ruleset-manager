@@ -15,6 +15,8 @@ pub struct Config {
     pub rules_dir: String,
     #[serde(default)]
     pub out_dir: String,
+    #[serde(default)]
+    pub groups: Vec<String>,
 }
 
 #[tracing::instrument]

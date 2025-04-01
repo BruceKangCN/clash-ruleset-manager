@@ -77,11 +77,11 @@ pub async fn sort_sets(state: State<'_, AppState>, updates: Vec<UpdateInfo>) -> 
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn get_set(state: State<'_, AppState>, id: u32, ty: String) -> Result<String> {
-    let sql = "select content from rules where ruleset_id = ? and type = ?;";
+pub async fn get_set_group(state: State<'_, AppState>, id: u32, group: String) -> Result<String> {
+    let sql = "select content from rules where ruleset_id = ? and group_type = ?;";
     let (content,): (String,) = sqlx::query_as(sql)
         .bind(id)
-        .bind(&ty)
+        .bind(&group)
         .fetch_one(&state.pool)
         .await?;
 
@@ -90,16 +90,47 @@ pub async fn get_set(state: State<'_, AppState>, id: u32, ty: String) -> Result<
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn add_set(
+pub async fn create_set(state: State<'_, AppState>, name: String) -> Result<RuleSet> {
+    let pool = &state.pool;
+    let tx = pool.begin().await?;
+
+    let sql = "select count(*) from rulesets;";
+    let (count,): (u32,) = sqlx::query_as(sql).fetch_one(pool).await?;
+    let ord = count + 1;
+
+    let sql = "insert into rulesets (ord, name) values (?, ?) returning *;";
+    let ruleset: RuleSet = sqlx::query_as(sql)
+        .bind(ord)
+        .bind(&name)
+        .fetch_one(pool)
+        .await?;
+
+    for group in &state.config.groups {
+        let sql = "insert into rules (ruleset_id, group_type) values (?, ?);";
+        sqlx::query(sql)
+            .bind(ruleset.id)
+            .bind(&group)
+            .execute(pool)
+            .await?;
+    }
+
+    tx.commit().await?;
+
+    Ok(ruleset)
+}
+
+#[tauri::command]
+#[tracing::instrument]
+pub async fn update_set_group(
     state: State<'_, AppState>,
     id: u32,
-    ty: String,
+    group: String,
     content: String,
 ) -> Result<()> {
-    let sql = "insert into rules (ruleset_id, type, content) values (?, ?, ?);";
+    let sql = "insert into rules (ruleset_id, group_type, content) values (?, ?, ?);";
     sqlx::query(sql)
         .bind(id)
-        .bind(&ty)
+        .bind(&group)
         .bind(&content)
         .execute(&state.pool)
         .await?;
