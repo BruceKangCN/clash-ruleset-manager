@@ -8,7 +8,7 @@
     <Navbar class="p-2 border-b" data-testid="nav-bar">
         <NavBrand href="/">
             <img src="/tauri.svg" class="me-3 h-6" alt="Tauri Logo" />
-            <span class="title">Clash 规则管理</span>
+            <span class="title">Clash 配置管理</span>
         </NavBrand>
 
         <NavUl>
