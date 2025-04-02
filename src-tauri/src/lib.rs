@@ -50,11 +50,11 @@ async fn setup_db(rules_dir: impl AsRef<Path> + Debug) -> Result<Pool<Sqlite>> {
     cfg_if! {
         if #[cfg(debug_assertions)] {
             let options = SqliteConnectOptions::new().filename("app.db").create_if_missing(true);
+            let pool = SqlitePool::connect_with(options).await?;
         } else {
-            let options = SqliteConnectOptions::new().filename(":memory:");
+            let pool = SqlitePool::connect("sqlite::memory:").await?;
         }
     }
-    let pool = SqlitePool::connect_with(options).await?;
     sqlx::migrate!().run(&pool).await?;
 
     let re = Regex::new(r"^(\d+)_(.*?)_(zz|gs|ym|ip)\.txt$").unwrap();

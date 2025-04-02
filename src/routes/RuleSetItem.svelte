@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import { Button, Card, Spinner } from "flowbite-svelte";
 
     export interface RuleSet {
@@ -24,7 +25,7 @@
         {#await deletePromise}
             <Spinner class="me-3" size={4} />
         {/await}
-        移除
+        <span>移除</span>
     </Button>
-    <Button color="primary" href="./{ruleSet.id}">编辑</Button>
+    <Button color="primary" on:click={() => { goto(`./edit?id=${ruleSet.id}`); }}>编辑</Button>
 </Card>

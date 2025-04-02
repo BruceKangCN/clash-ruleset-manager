@@ -1,3 +1,4 @@
+import { navigating } from "$app/state";
 import { invoke } from "@tauri-apps/api/core";
 import type { RuleSet } from "../RuleSetItem.svelte";
 
@@ -12,8 +13,9 @@ export interface RuleSetInfo {
     groups: Group[],
 }
 
-export async function load({ params }): Promise<RuleSetInfo> {
-    const id = parseInt(params.id);
+export async function load(): Promise<RuleSetInfo> {
+    const url = navigating.to?.url;
+    const id = parseInt(url?.searchParams.get("id") ?? "");
     const { name } = await invoke<RuleSet>("get_set", { id });
 
     const types = ["gs", "zz", "ym", "ip"];
