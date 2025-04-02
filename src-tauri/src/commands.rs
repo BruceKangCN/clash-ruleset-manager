@@ -78,7 +78,7 @@ pub async fn sort_sets(state: State<'_, AppState>, updates: Vec<UpdateInfo>) -> 
 #[tauri::command]
 #[tracing::instrument]
 pub async fn get_set_group(state: State<'_, AppState>, id: u32, group: String) -> Result<String> {
-    let sql = "select content from rules where ruleset_id = ? and group_type = ?;";
+    let sql = "select content from rules where ruleset_id = ? and grp = ?;";
     let (content,): (String,) = sqlx::query_as(sql)
         .bind(id)
         .bind(&group)
@@ -106,7 +106,7 @@ pub async fn create_set(state: State<'_, AppState>, name: String) -> Result<Rule
         .await?;
 
     for group in &state.config.groups {
-        let sql = "insert into rules (ruleset_id, group_type) values (?, ?);";
+        let sql = "insert into rules (ruleset_id, grp) values (?, ?);";
         sqlx::query(sql)
             .bind(ruleset.id)
             .bind(&group)
@@ -127,7 +127,7 @@ pub async fn update_set_group(
     group: String,
     content: String,
 ) -> Result<()> {
-    let sql = "insert into rules (ruleset_id, group_type, content) values (?, ?, ?);";
+    let sql = "insert into rules (ruleset_id, grp, content) values (?, ?, ?);";
     sqlx::query(sql)
         .bind(id)
         .bind(&group)

@@ -118,7 +118,7 @@ async fn create_rule_group(
 ) -> Result<Rule> {
     let ruleset_content = tokio::fs::read_to_string(path).await?;
 
-    let sql = "insert into rules (ruleset_id, group_type, content) values (?, ?, ?) returning *;";
+    let sql = "insert into rules (ruleset_id, grp, content) values (?, ?, ?) returning *;";
     let rule = sqlx::query_as(sql)
         .bind(ruleset_id)
         .bind(group)
