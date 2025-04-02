@@ -1,38 +1,16 @@
 <script lang="ts">
-    import { invoke } from "@tauri-apps/api/core";
-    import { DarkMode, Navbar, NavBrand } from "flowbite-svelte";
+    import { Hr } from "flowbite-svelte";
+    import RuleSetManager from "./RuleSetManager.svelte";
 </script>
 
-<header class="header">
-    <Navbar class="p-2 border-b" data-testid="nav-bar">
-        <NavBrand href="/">
-            <img src="/tauri.svg" class="me-3 h-6" alt="Tauri Logo" />
-            <span class="title">Clash 规则管理</span>
-        </NavBrand>
+<main class="w-full">
+    <RuleSetManager />
+</main>
 
-        <div class="flex">
-            <DarkMode />
-        </div>
-    </Navbar>
-</header>
+<Hr class="my-8" />
 
-<main></main>
-
-<style lang="postcss">
-    @reference "tailwindcss";
-
-    .header {
-        @apply sticky;
-        @apply w-full;
-        @apply z-20;
-        @apply top-0;
-        @apply start-0;
-    }
-
-    .title {
-        @apply self-center;
-        @apply whitespace-nowrap;
-        @apply text-xl;
-        @apply font-semibold;
-    }
-</style>
+<footer>
+    <pre>footer placeholder</pre>
+    <!-- TODO: subscription nodes -->
+    <!-- TODO: self-hosted nodes -->
+</footer>

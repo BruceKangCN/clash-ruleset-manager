@@ -22,6 +22,24 @@ pub async fn get_sets(state: State<'_, AppState>) -> Result<Vec<RuleSet>> {
 
 #[tauri::command]
 #[tracing::instrument]
+pub async fn get_set(state: State<'_, AppState>, id: u32) -> Result<RuleSet> {
+    let sql = "select * from rulesets where id = ?;";
+    let set: RuleSet = sqlx::query_as(sql).bind(id).fetch_one(&state.pool).await?;
+
+    Ok(set)
+}
+
+#[tauri::command]
+#[tracing::instrument]
+pub async fn rename_set(state: State<'_, AppState>, id: u32, name: String) -> Result<()> {
+    let sql = "update rulesets set name = ? where id = ?;";
+    sqlx::query(sql).bind(id).bind(&name).execute(&state.pool).await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+#[tracing::instrument]
 pub async fn remove_set(state: State<'_, AppState>, id: u32) -> Result<()> {
     let pool = &state.pool;
 

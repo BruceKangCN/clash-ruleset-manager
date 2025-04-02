@@ -33,6 +33,8 @@ pub async fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::get_sets,
+            commands::get_set,
+            commands::rename_set,
             commands::remove_set,
             commands::sort_sets,
             commands::create_set,
