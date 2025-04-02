@@ -27,5 +27,5 @@
         {/await}
         <span>移除</span>
     </Button>
-    <Button color="primary" on:click={() => { goto(`./edit?id=${ruleSet.id}`); }}>编辑</Button>
+    <Button color="primary" on:click={() => { goto(`rules/edit?id=${ruleSet.id}`); }}>编辑</Button>
 </Card>

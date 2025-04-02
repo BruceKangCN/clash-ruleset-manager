@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DarkMode, Navbar, NavBrand } from "flowbite-svelte";
+    import { DarkMode, Navbar, NavBrand, NavLi, NavUl } from "flowbite-svelte";
 
     const { children } = $props();
 </script>
@@ -10,6 +10,11 @@
             <img src="/tauri.svg" class="me-3 h-6" alt="Tauri Logo" />
             <span class="title">Clash 规则管理</span>
         </NavBrand>
+
+        <NavUl>
+            <NavLi href="/rules">规则管理</NavLi>
+            <NavLi href="/nodes">节点管理</NavLi>
+        </NavUl>
 
         <div class="flex">
             <DarkMode />
