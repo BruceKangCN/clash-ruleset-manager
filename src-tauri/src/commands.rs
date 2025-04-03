@@ -1,14 +1,12 @@
 use std::path::PathBuf;
 
 use tauri::State;
-use tokio::io::AsyncWriteExt;
 
 use crate::{
     config::AppState,
     error::Result,
-    parse_node_file,
     schema::RuleSet,
-    types::{Node, Nodes, UpdateInfo},
+    types::{NodeGroup, UpdateInfo},
 };
 
 #[tauri::command]
@@ -158,29 +156,26 @@ pub async fn update_set_group(
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn get_nodes(state: State<'_, AppState>) -> Result<Nodes> {
+pub async fn get_nodes(state: State<'_, AppState>) -> Result<Vec<NodeGroup>> {
     let out_dir = &state.config.out_dir;
-    let sub = parse_node_file(PathBuf::from(out_dir).join("sub.txt")).await?;
-    let zj = parse_node_file(PathBuf::from(out_dir).join("zj.txt")).await?;
 
-    let nodes = Nodes { sub, zj };
+    let mut groups = Vec::new();
 
-    Ok(nodes)
+    for ty in ["sub", "zj"] {
+        let path = PathBuf::from(out_dir).join(&format!("{}.txt", ty));
+        let content = tokio::fs::read_to_string(path).await?;
+        groups.push(NodeGroup { r#type: ty.into(), content });
+    }
+
+    Ok(groups)
 }
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn append_nodes(state: State<'_, AppState>, node: Node) -> Result<()> {
-    let ty = node.r#type.to_owned().unwrap_or_default();
-    let filename = format!("{}.txt", ty);
+pub async fn update_nodes(state: State<'_, AppState>, r#type: String, content: String) -> Result<()> {
+    let filename = format!("{}.txt", r#type);
     let path = PathBuf::from(&state.config.out_dir).join(filename);
-
-    let mut file = tokio::fs::OpenOptions::new()
-        .append(true)
-        .open(path)
-        .await?;
-    file.write(format!("\n{}", &node.to_string()).as_bytes())
-        .await?;
+    tokio::fs::write(path, &content).await?;
 
     Ok(())
 }

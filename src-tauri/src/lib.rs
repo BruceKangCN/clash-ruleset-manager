@@ -8,7 +8,6 @@ use schema::{Rule, RuleSet};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use tokio::fs::read_dir;
 use tracing_subscriber::EnvFilter;
-use types::Node;
 
 pub mod commands;
 pub mod config;
@@ -40,6 +39,8 @@ pub async fn run() {
             commands::create_set,
             commands::get_set_group,
             commands::update_set_group,
+            commands::get_nodes,
+            commands::update_nodes,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -129,16 +130,4 @@ async fn create_rule_group(
         .await?;
 
     Ok(rule)
-}
-
-#[tracing::instrument]
-pub async fn parse_node_file(path: impl AsRef<Path> + Debug) -> Result<Vec<Node>> {
-    let nodes = tokio::fs::read_to_string(path)
-        .await?
-        .lines()
-        .map(|line| line.trim())
-        .map(|line| Node::from_str(line))
-        .collect();
-
-    Ok(nodes)
 }

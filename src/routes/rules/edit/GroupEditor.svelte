@@ -31,5 +31,5 @@
         <Button on:click={() => { updateFn(group, content); }} color="primary">更新</Button>
     </div>
 
-    <Textarea bind:value={content} rows={6} />
+    <Textarea bind:value={content} rows={6} class="font-mono text-nowrap" />
 </div>
