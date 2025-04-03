@@ -2,7 +2,7 @@
     import { Input, Button } from "flowbite-svelte";
 
     interface Props {
-        createFn: (name: string) => Promise<void>,
+        createFn: (name: string) => Promise<void>;
     }
 
     const { createFn }: Props = $props();

@@ -23,8 +23,7 @@
     }
 
     async function generate(): Promise<void> {
-        // TODO
-        return;
+        await invoke("generate_ruleset_files");
     }
 </script>
 
@@ -41,7 +40,9 @@
     <Tooltip triggeredBy="#generate-btn">
         <h5 class="text-lg font-bold">生成规则集文件</h5>
         <p>修改后的配置需写入文件才能生效。</p>
-        <p class="font-bold text-yellow-500">请注意：该操作将清除输出文件夹中原有的文件！</p>
+        <p class="font-bold text-yellow-500">
+            请注意：该操作将清除输出文件夹中原有的文件！
+        </p>
     </Tooltip>
 </footer>
 

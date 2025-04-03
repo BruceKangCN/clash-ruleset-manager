@@ -1,12 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 
 export interface NodeGroup {
-    type: string,
-    content: string,
+    type: string;
+    content: string;
 }
 
 export interface PageData {
-    nodeGroups: NodeGroup[],
+    nodeGroups: NodeGroup[];
 }
 
 export async function load(): Promise<PageData> {

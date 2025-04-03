@@ -23,6 +23,10 @@
     <NameEditor bind:name {renameFn} />
 
     {#each groups as group}
-        <GroupEditor group={group.type} bind:content={group.content} {updateFn} />
+        <GroupEditor
+            group={group.type}
+            bind:content={group.content}
+            {updateFn}
+        />
     {/each}
 </div>

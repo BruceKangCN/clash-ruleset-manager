@@ -39,6 +39,7 @@ pub async fn run() {
             commands::create_set,
             commands::get_set_group,
             commands::update_set_group,
+            commands::generate_ruleset_files,
             commands::get_nodes,
             commands::update_nodes,
         ])

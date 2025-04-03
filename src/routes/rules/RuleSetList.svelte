@@ -3,14 +3,14 @@
     import RuleSetItem, { type RuleSet } from "./RuleSetItem.svelte";
 
     export interface UpdateInfo {
-        id: number,
-        new_order: number,
+        id: number;
+        new_order: number;
     }
 
     interface Props {
-        items: RuleSet[],
-        removeFn: (id: number) => Promise<void>,
-        updateFn: (updates: UpdateInfo[]) => Promise<void>,
+        items: RuleSet[];
+        removeFn: (id: number) => Promise<void>;
+        updateFn: (updates: UpdateInfo[]) => Promise<void>;
     }
 
     let { items = $bindable([]), removeFn, updateFn }: Props = $props();

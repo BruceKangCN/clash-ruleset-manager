@@ -31,7 +31,11 @@ pub async fn get_set(state: State<'_, AppState>, id: u32) -> Result<RuleSet> {
 #[tracing::instrument]
 pub async fn rename_set(state: State<'_, AppState>, id: u32, name: String) -> Result<()> {
     let sql = "update rulesets set name = ? where id = ?;";
-    sqlx::query(sql).bind(id).bind(&name).execute(&state.pool).await?;
+    sqlx::query(sql)
+        .bind(id)
+        .bind(&name)
+        .execute(&state.pool)
+        .await?;
 
     Ok(())
 }
@@ -156,6 +160,30 @@ pub async fn update_set_group(
 
 #[tauri::command]
 #[tracing::instrument]
+pub async fn generate_ruleset_files(state: State<'_, AppState>) -> Result<()> {
+    let rulesets = get_sets(state.to_owned()).await?;
+
+    // clear ruleset dir
+    let dir = PathBuf::from(&state.config.rules_dir);
+    tokio::fs::remove_dir_all(dir.to_owned()).await?;
+    tokio::fs::create_dir_all(dir.to_owned()).await?;
+
+    for ruleset in rulesets {
+        for group in &state.config.groups {
+            let filename = format!("{}_{}_{}.txt", ruleset.ord, &ruleset.name, &group);
+            let path = dir.join(filename);
+
+            let content = get_set_group(state.to_owned(), ruleset.id, group.to_owned()).await?;
+
+            tokio::fs::write(path, &content).await?;
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+#[tracing::instrument]
 pub async fn get_nodes(state: State<'_, AppState>) -> Result<Vec<NodeGroup>> {
     let out_dir = &state.config.out_dir;
 
@@ -164,7 +192,10 @@ pub async fn get_nodes(state: State<'_, AppState>) -> Result<Vec<NodeGroup>> {
     for ty in ["sub", "zj"] {
         let path = PathBuf::from(out_dir).join(&format!("{}.txt", ty));
         let content = tokio::fs::read_to_string(path).await?;
-        groups.push(NodeGroup { r#type: ty.into(), content });
+        groups.push(NodeGroup {
+            r#type: ty.into(),
+            content,
+        });
     }
 
     Ok(groups)
@@ -172,7 +203,11 @@ pub async fn get_nodes(state: State<'_, AppState>) -> Result<Vec<NodeGroup>> {
 
 #[tauri::command]
 #[tracing::instrument]
-pub async fn update_nodes(state: State<'_, AppState>, r#type: String, content: String) -> Result<()> {
+pub async fn update_nodes(
+    state: State<'_, AppState>,
+    r#type: String,
+    content: String,
+) -> Result<()> {
     let filename = format!("{}.txt", r#type);
     let path = PathBuf::from(&state.config.out_dir).join(filename);
     tokio::fs::write(path, &content).await?;
