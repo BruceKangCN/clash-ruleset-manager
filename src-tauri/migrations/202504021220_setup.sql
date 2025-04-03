@@ -1,15 +1,11 @@
-drop table if exists rulesets;
-
-create table rulesets
+create table if not exists rulesets
 (
     id integer not null primary key,
     ord integer not null, -- apply order (priority) for ruleset
     name text not null default ''
 );
 
-drop table if exists rules;
-
-create table rules
+create table if not exists rules
 (
     id integer not null primary key,
     ruleset_id integer not null,

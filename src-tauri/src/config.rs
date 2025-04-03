@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug)]
 pub struct AppState {
     pub config: Config,
-    pub pool: sqlx::Pool<sqlx::Sqlite>,
+    pub pool: sqlx::SqlitePool,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Debug)]

@@ -147,11 +147,11 @@ pub async fn update_set_group(
     group: String,
     content: String,
 ) -> Result<()> {
-    let sql = "insert into rules (ruleset_id, grp, content) values (?, ?, ?);";
+    let sql = "update rules set content = ? where ruleset_id = ? and grp = ?;";
     sqlx::query(sql)
+        .bind(&content)
         .bind(id)
         .bind(&group)
-        .bind(&content)
         .execute(&state.pool)
         .await?;
 
@@ -164,9 +164,13 @@ pub async fn generate_ruleset_files(state: State<'_, AppState>) -> Result<()> {
     let rulesets = get_sets(state.to_owned()).await?;
 
     // clear ruleset dir
+    // IMPORTANT: wait until dir is really removed/created, or following operation will fail!
+    // it's necessary to wait a few milliseconds after removing dir,
+    // see https://github.com/rust-lang/rust/issues/33707
     let dir = PathBuf::from(&state.config.rules_dir);
-    tokio::fs::remove_dir_all(dir.to_owned()).await?;
-    tokio::fs::create_dir_all(dir.to_owned()).await?;
+    std::fs::remove_dir_all(dir.to_owned())?;
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    std::fs::create_dir_all(dir.to_owned())?;
 
     for ruleset in rulesets {
         for group in &state.config.groups {

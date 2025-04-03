@@ -1,11 +1,10 @@
 use std::{fmt::Debug, path::Path};
 
-use cfg_if::cfg_if;
-use config::{AppState, load_config};
+use config::{load_config, AppState, Config};
 use error::Result;
 use regex::Regex;
 use schema::{Rule, RuleSet};
-use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
+use sqlx::SqlitePool;
 use tokio::fs::read_dir;
 use tracing_subscriber::EnvFilter;
 
@@ -24,7 +23,7 @@ pub async fn run() {
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
     let config = load_config().unwrap();
-    let pool = setup_db(&config.rules_dir).await.unwrap();
+    let pool = setup_db(&config).await.unwrap();
     let state = AppState { config, pool };
 
     tauri::Builder::default()
@@ -48,22 +47,16 @@ pub async fn run() {
 }
 
 #[tracing::instrument]
-async fn setup_db(rules_dir: impl AsRef<Path> + Debug) -> Result<Pool<Sqlite>> {
-    cfg_if! {
-        if #[cfg(debug_assertions)] {
-            let options = SqliteConnectOptions::new().filename("app.db").create_if_missing(true);
-            let pool = SqlitePool::connect_with(options).await?;
-        } else {
-            let pool = SqlitePool::connect("sqlite::memory:").await?;
-        }
-    }
+async fn setup_db(config: &Config) -> Result<SqlitePool> {
+    let pool = SqlitePool::connect("sqlite::memory:").await?;
     sqlx::migrate!().run(&pool).await?;
 
-    let re = Regex::new(r"^(\d+)_(.*?)_(zz|gs|ym|ip)\.txt$").unwrap();
+    let re = format!(r"^(\d+)_(.*?)_({})\.txt$", config.groups.join("|"));
+    let re = Regex::new(&re).unwrap();
 
     let tx = pool.begin().await?;
 
-    let mut entries = read_dir(rules_dir).await?;
+    let mut entries = read_dir(&config.rules_dir).await?;
     while let Ok(Some(entry)) = entries.next_entry().await {
         if !entry.file_type().await?.is_file() {
             continue;
@@ -94,7 +87,7 @@ async fn setup_db(rules_dir: impl AsRef<Path> + Debug) -> Result<Pool<Sqlite>> {
 }
 
 #[tracing::instrument]
-async fn create_ruleset_record(pool: &Pool<Sqlite>, order: u32, name: &str) -> Result<RuleSet> {
+async fn create_ruleset_record(pool: &SqlitePool, order: u32, name: &str) -> Result<RuleSet> {
     if let Some::<RuleSet>(ruleset) = sqlx::query_as("select * from rulesets where name = ?;")
         .bind(name)
         .fetch_optional(pool)
@@ -115,7 +108,7 @@ async fn create_ruleset_record(pool: &Pool<Sqlite>, order: u32, name: &str) -> R
 
 #[tracing::instrument]
 async fn create_rule_group(
-    pool: &Pool<Sqlite>,
+    pool: &SqlitePool,
     ruleset_id: u32,
     group: &str,
     path: impl AsRef<Path> + Debug,
