@@ -1,4 +1,5 @@
 <script lang="ts">
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
     import { Input, Button } from "flowbite-svelte";
 
     interface Props {
@@ -8,11 +9,11 @@
     const { createFn }: Props = $props();
 
     let newRuleSetName = $state("");
+    let showModal = $state(false);
 
     async function onsubmit(evt: SubmitEvent): Promise<void> {
         evt.preventDefault();
-        await createFn(newRuleSetName);
-        newRuleSetName = "";
+        showModal = true;
     }
 </script>
 
@@ -20,3 +21,11 @@
     <Input bind:value={newRuleSetName} placeholder="规则集名称" class="w-sm" />
     <Button color="green" type="submit" class="w-20">创建</Button>
 </form>
+
+<ConfirmModal
+    bind:open={showModal}
+    action={async () => {
+        await createFn(newRuleSetName);
+        newRuleSetName = "";
+    }}
+/>

@@ -1,50 +1,103 @@
 <script lang="ts">
-    import { invoke } from "@tauri-apps/api/core";
     import { Button, Tooltip } from "flowbite-svelte";
-    import { type RuleSet } from "./RuleSetItem.svelte";
-    import RuleSetList, { type UpdateInfo } from "./RuleSetList.svelte";
+    import type { RuleSet } from "$lib/schema";
+    import type { ReorderInfo } from "$lib/types";
+    import RuleSetList from "./RuleSetList.svelte";
     import RuleSetCreationForm from "./RuleSetCreationForm.svelte";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+    import { Fetcher } from "$lib/fetcher";
+    import { getToastContext } from "$lib/toast";
 
-    let ruleSetsPromise: Promise<RuleSet[]> = $state(invoke("get_sets"));
+    // `fetcher` and `createToast` must be initialized before `rulesetsPromise`,
+    // because it is initialized by `getRuleSets`, which uses `fetcher` and
+    // `createToast` inside.
+    const fetcher = Fetcher.wrap(fetch);
+    const createToast = getToastContext();
 
-    async function removeFn(id: number): Promise<void> {
-        await invoke("remove_set", { id });
-        ruleSetsPromise = invoke("get_sets");
+    let rulesetsPromise: Promise<RuleSet[]> = $state(getRuleSets());
+
+    /**
+     * whether generation confirm modal is shown
+     */
+    let showModal = $state(false);
+
+    async function getRuleSets(): Promise<RuleSet[]> {
+        try {
+            const rulesets: RuleSet[] = await fetcher.get("/api/rulesets");
+            return rulesets;
+        } catch (err) {
+            createToast("error", `规则集获取失败：${err}`);
+            return [];
+        }
     }
 
-    async function updateFn(updates: UpdateInfo[]): Promise<void> {
-        await invoke("sort_sets", { updates });
-        ruleSetsPromise = invoke("get_sets");
+    async function removeFn(id: number): Promise<void> {
+        try {
+            await fetcher.delete(`/api/rulesets/${id}`);
+            createToast("success", "规则集删除成功");
+        } catch (err) {
+            createToast("error", `规则集删除失败：${err}`);
+        }
+        rulesetsPromise = getRuleSets();
+    }
+
+    async function updateFn(updates: ReorderInfo[]): Promise<void> {
+        await fetcher.patch("/api/rulesets", { updates });
+        rulesetsPromise = getRuleSets();
     }
 
     async function createFn(name: string): Promise<void> {
-        await invoke("create_set", { name });
-        ruleSetsPromise = invoke("get_sets");
+        try {
+            await fetcher.put("/api/rulesets", { name });
+            createToast("success", "规则集创建成功");
+        } catch (err) {
+            createToast("error", `规则集创建失败：${err}`);
+        }
+        rulesetsPromise = getRuleSets();
     }
 
     async function generate(): Promise<void> {
-        await invoke("generate_ruleset_files");
+        try {
+            await fetcher.post("/api/rulesets");
+            createToast("success", "规则文件生成成功");
+        } catch (err) {
+            createToast("error", `规则文件生成失败：${err}`);
+        }
     }
 </script>
 
-{#await ruleSetsPromise}
-    <p class="text-xl mx-auto py-8">规则集加载中</p>
-{:then items}
-    <RuleSetList {items} {removeFn} {updateFn} />
-{/await}
+<div class="container mx-auto">
+    {#await rulesetsPromise}
+        <p class="text-xl mx-auto py-8">规则集加载中</p>
+    {:then items}
+        <RuleSetList {items} {removeFn} {updateFn} />
+    {/await}
+</div>
 
 <footer class="footer">
     <RuleSetCreationForm {createFn} />
 
-    <Button on:click={generate} id="generate-btn">生成</Button>
+    <Button
+        id="generate-btn"
+        on:click={() => {
+            showModal = true;
+        }}>生成</Button
+    >
     <Tooltip triggeredBy="#generate-btn">
-        <h5 class="text-lg font-bold">生成规则集文件</h5>
+        <h3 class="text-lg font-bold">生成规则集文件</h3>
         <p>修改后的配置需写入文件才能生效。</p>
         <p class="font-bold text-yellow-500">
             请注意：该操作将清除输出文件夹中原有的文件！
         </p>
     </Tooltip>
 </footer>
+
+<ConfirmModal
+    bind:open={showModal}
+    action={async () => {
+        await generate();
+    }}
+/>
 
 <style lang="postcss">
     @reference "tailwindcss";

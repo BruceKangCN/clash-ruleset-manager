@@ -3,6 +3,7 @@
 a tauri desktop app to manage clash rulesets.
 
 function:
+
 - add ruleset
 - remove ruleset
 - modify ruleset name or content
@@ -21,6 +22,6 @@ is parsed to rules
 
 ```yaml
 rules:
-- IP-CIDR,127.0.0.1,DIRECT
-- IP-CIDR,192.168.0.1,DIRECT
+    - IP-CIDR,127.0.0.1,DIRECT
+    - IP-CIDR,192.168.0.1,DIRECT
 ```

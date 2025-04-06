@@ -1,0 +1,7 @@
+groups:
+    - ym
+    - ip
+    - gs
+    - zz
+rules_dir: data/rules
+nodes_dir: data/nodes

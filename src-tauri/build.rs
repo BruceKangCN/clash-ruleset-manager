@@ -1,4 +1,0 @@
-fn main() {
-    print!("cargo::rerun-if-changed=migrations");
-    tauri_build::build()
-}

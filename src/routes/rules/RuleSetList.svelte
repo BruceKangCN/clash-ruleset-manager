@@ -1,16 +1,13 @@
 <script lang="ts">
     import { dndzone, type DndEvent } from "svelte-dnd-action";
-    import RuleSetItem, { type RuleSet } from "./RuleSetItem.svelte";
-
-    export interface UpdateInfo {
-        id: number;
-        new_order: number;
-    }
+    import type { RuleSet } from "$lib/schema";
+    import type { ReorderInfo } from "$lib/types";
+    import RuleSetItem from "./RuleSetItem.svelte";
 
     interface Props {
         items: RuleSet[];
         removeFn: (id: number) => Promise<void>;
-        updateFn: (updates: UpdateInfo[]) => Promise<void>;
+        updateFn: (updates: ReorderInfo[]) => Promise<void>;
     }
 
     let { items = $bindable([]), removeFn, updateFn }: Props = $props();
@@ -20,13 +17,19 @@
     }
 
     function handleDndFinish(e: CustomEvent<DndEvent<RuleSet>>) {
-        items = e.detail.items;
+        // create a deep copy of items
+        //
+        // "original" means its `ord` field is unchanged.
+        const originalItems = e.detail.items.map(v => v);
 
-        const newItems = items.map((item, i) => ({ ...item, ord: i + 1 }));
+        // update order locally
+        items = originalItems.map((item, i) => ({ ...item, ord: i + 1 }));
 
-        const updates: UpdateInfo[] = newItems
-            .filter((item, i) => item.ord !== i)
-            .map((item) => ({ id: item.id, new_order: item.ord }));
+        // create update information using original items
+        const updates: ReorderInfo[] = originalItems
+            .filter((item, i) => item.ord !== i + 1)
+            .map((item, i) => ({ id: item.id, newOrder: i + 1 }));
+
         updateFn(updates);
     }
 </script>
@@ -38,7 +41,7 @@
     on:consider={handleDndConsider}
     on:finalize={handleDndFinish}
 >
-    {#each items as ruleSet (ruleSet.id)}
-        <RuleSetItem {ruleSet} {removeFn} />
+    {#each items as ruleset (ruleset.id)}
+        <RuleSetItem ruleset={ruleset} {removeFn} />
     {/each}
 </div>

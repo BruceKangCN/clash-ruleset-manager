@@ -1,41 +1,44 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { Button, Card, Spinner } from "flowbite-svelte";
-
-    export interface RuleSet {
-        id: number;
-        ord: number;
-        name: string;
-    }
+    import { Button, Card } from "flowbite-svelte";
+    import type { RuleSet } from "$lib/schema";
+    import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     interface Props {
-        ruleSet: RuleSet;
+        ruleset: RuleSet;
         removeFn: (id: number) => Promise<void>;
     }
 
-    const { ruleSet, removeFn }: Props = $props();
+    const { ruleset, removeFn }: Props = $props();
 
-    let deletePromise: Promise<void> = $state(Promise.resolve());
+    let showModal = $state(false);
 </script>
 
 <Card horizontal padding="sm" size="md" class="items-center gap-2">
-    <span class="flex grow">{ruleSet.ord} - {ruleSet.name}</span>
-    <!-- <div class="spacer"></div> -->
-    <Button
-        color="red"
-        on:click={() => {
-            deletePromise = removeFn(ruleSet.id);
-        }}
-    >
-        {#await deletePromise}
-            <Spinner class="me-3" size={4} />
-        {/await}
-        <span>移除</span>
-    </Button>
-    <Button
-        color="primary"
-        on:click={() => {
-            goto(`rules/edit?id=${ruleSet.id}`);
-        }}>编辑</Button
-    >
+    <span class="flex grow">{ruleset.ord} - {ruleset.name}</span>
+
+    <div class="flex-none">
+        <Button
+            color="red"
+            on:click={() => {
+                showModal = true;
+            }}
+        >
+            移除
+        </Button>
+        <Button
+            on:click={() => {
+                goto(`rules/${ruleset.id}`);
+            }}
+        >
+            编辑
+        </Button>
+    </div>
 </Card>
+
+<ConfirmModal
+    bind:open={showModal}
+    action={async () => {
+        await removeFn(ruleset.id);
+    }}
+/>
