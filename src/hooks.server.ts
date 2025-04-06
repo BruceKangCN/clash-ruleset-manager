@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { lstatSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
-import { config } from "$lib/server/config";
+import { getConfig } from "$lib/server/config";
 import { db } from "$lib/server/db";
 import { createRuleGroup, createRuleSetRecord } from "$lib/server/db_util";
 import migration from "./migration.sql?raw";
@@ -9,7 +9,7 @@ import type { RuleSet } from "$lib/schema";
 
 export async function init() {
     await migrate();
-    createMissing();
+    await createMissing();
 }
 
 /**
@@ -24,6 +24,8 @@ export async function init() {
  */
 async function migrate() {
     db.exec(migration);
+
+    const config = await getConfig();
 
     // rule file name pattern
     const re = new RegExp(`^(\\d+)_(.*?)_(${config.groups.join("|")})\\.txt`);
@@ -69,7 +71,9 @@ async function migrate() {
  * it's unnecessary to create missing files, since they'll be created by "generate"
  * handler if records are created.
  */
-function createMissing() {
+async function createMissing() {
+    const config = await getConfig();
+
     const tx = db.transaction((rulesets: RuleSet[]) => {
         for (const ruleset of rulesets) {
             for (const group of config.groups) {

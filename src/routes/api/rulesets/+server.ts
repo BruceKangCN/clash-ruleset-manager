@@ -1,7 +1,7 @@
 import { readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { json } from "@sveltejs/kit";
-import { config } from "$lib/server/config.js";
+import { getConfig } from "$lib/server/config.js";
 import { db } from "$lib/server/db";
 import type { RuleGroup, RuleSet } from "$lib/schema";
 import type { ReorderInfo } from "$lib/types";
@@ -27,6 +27,8 @@ interface PutData {
  * create ruleset named `name`, and its coresponding rule groups.
  */
 export async function PUT({ request }) {
+    const config = await getConfig();
+
     const tx = db.transaction((order: number, name: string) => {
         // create ruleset, return id
         const sql =
@@ -92,6 +94,7 @@ export async function PATCH({ request }) {
  * @see RuleGroup
  */
 export async function POST({ fetch }) {
+    const config = await getConfig();
     const fetcher = Fetcher.wrap(fetch);
 
     // clear dir

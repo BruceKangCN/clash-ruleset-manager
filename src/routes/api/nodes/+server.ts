@@ -1,15 +1,15 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { json } from "@sveltejs/kit";
-import { config } from "$lib/server/config";
+import { getConfig } from "$lib/server/config";
 import type { NodeGroup } from "$lib/types";
 
 /**
  * read and parse each file in `nodes_dir` as a node group, then return them.
- * @see config
  * @returns node groups
  */
 export async function GET() {
+    const config = await getConfig();
     const nodes_dir = config.nodes_dir;
 
     const files = await readdir(nodes_dir);

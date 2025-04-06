@@ -8,7 +8,9 @@ export interface Config {
     nodes_dir: string;
 }
 
-const configFile = join(process.cwd(), "config", "app.yaml");
-const buffer = await readFile(configFile);
+export async function getConfig(): Promise<Config> {
+    const configFile = join(process.cwd(), "config", "app.yaml");
+    const buffer = await readFile(configFile);
 
-export const config = load(buffer.toString()) as Config;
+    return load(buffer.toString()) as Config;
+}

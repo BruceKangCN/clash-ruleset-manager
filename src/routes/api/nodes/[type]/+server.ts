@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { json } from "@sveltejs/kit";
-import { config } from "$lib/server/config.js";
+import { getConfig } from "$lib/server/config.js";
 
 interface PatchData {
     content: string;
@@ -12,6 +12,8 @@ interface PatchData {
  * @see PatchData
  */
 export async function PATCH({ params, request }) {
+    const config = await getConfig();
+
     const type = params.type;
     const { content }: PatchData = await request.json();
 
