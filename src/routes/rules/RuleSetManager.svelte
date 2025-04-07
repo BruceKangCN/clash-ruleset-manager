@@ -39,11 +39,13 @@
             createToast("error", `规则集删除失败：${err}`);
         }
         rulesetsPromise = getRuleSets();
+        await rulesetsPromise;
     }
 
     async function updateFn(updates: ReorderInfo[]): Promise<void> {
         await fetcher.patch("/api/rulesets", { updates });
         rulesetsPromise = getRuleSets();
+        await rulesetsPromise;
     }
 
     async function createFn(name: string): Promise<void> {
@@ -54,6 +56,7 @@
             createToast("error", `规则集创建失败：${err}`);
         }
         rulesetsPromise = getRuleSets();
+        await rulesetsPromise;
     }
 
     async function generate(): Promise<void> {

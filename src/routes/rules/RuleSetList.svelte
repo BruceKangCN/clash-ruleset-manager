@@ -23,11 +23,10 @@
     }
 
     function handleDndFinish(e: CustomEvent<DndEvent<RuleSet>>) {
-        updateOrder(e.detail.items);
+        updateOrder(e);
     }
 
-    // FIXME: sometimes create invalid orders
-    async function updateOrder(items: RuleSet[]) {
+    async function updateOrder(e: CustomEvent<DndEvent<RuleSet>>) {
         // prevent furthur user actions using a modal
         showModal = true;
 
@@ -35,15 +34,14 @@
             // create a deep copy of original items
             //
             // "original" means its `ord` field is unchanged.
-            const originalItems = items.map(v => v);
+            const originalItems = [...e.detail.items];
 
             // update order locally
             items = originalItems.map((item, i) => ({ ...item, ord: i + 1 }));
 
             // create update information using original items
-            const updates: ReorderInfo[] = originalItems
-                .filter((item, i) => item.ord !== i + 1)
-                .map((item, i) => ({ id: item.id, newOrder: i + 1 }));
+            const updates: ReorderInfo[] = items
+                .map((item) => ({ id: item.id, newOrder: item.ord }));
 
             await updateFn(updates);
         } catch (err) {

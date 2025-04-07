@@ -110,7 +110,7 @@ export async function POST({ fetch }) {
     // generate files
     for (const ruleset of rulesets) {
         // generate files per group
-        const promises = config.groups.map(async (group) => {
+        for (const group of config.groups) {
             // get file path
             const filename = `${ruleset.ord}_${ruleset.name}_${group}.txt`;
             const path = join(config.rules_dir, filename);
@@ -121,8 +121,7 @@ export async function POST({ fetch }) {
 
             // write to file
             await writeFile(path, content);
-        });
-        await Promise.all(promises);
+        }
     }
 
     return json({});
