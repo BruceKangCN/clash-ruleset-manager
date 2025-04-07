@@ -44,8 +44,10 @@
 
     async function updateFn(updates: ReorderInfo[]): Promise<void> {
         await fetcher.patch("/api/rulesets", { updates });
-        rulesetsPromise = getRuleSets();
-        await rulesetsPromise;
+        // skip syncing with backend to improve user experience (skip reassigning
+        // the `rulesetsPromise`, to prevent whole list update).
+        //
+        // full order update may be needed to ensure proper orders.
     }
 
     async function createFn(name: string): Promise<void> {
