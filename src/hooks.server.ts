@@ -1,15 +1,13 @@
 import { readFile } from "node:fs/promises";
-import { lstatSync, readdirSync } from "node:fs";
-import { basename, join } from "node:path";
+import { existsSync, lstatSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { getConfig } from "$lib/server/config";
 import { db } from "$lib/server/db";
 import { createRuleGroup, createRuleSetRecord } from "$lib/server/db_util";
 import migration from "./migration.sql?raw";
-import type { RuleSet } from "$lib/schema";
 
 export async function init() {
     await migrate();
-    await createMissing();
 }
 
 /**
@@ -21,88 +19,70 @@ export async function init() {
  *     > a rule file is a file in `rules_dir` with filename matching specific
  *     > pattern.
  * 3. fill tables with content read from rule files.
+ *     > if a rule group file owned by a ruleset is not available (it does not
+ *     > exists or is not a regular file), the coresponding rule group record
+ *     > will be created with `content` field set to an empty string.
  */
 async function migrate() {
     db.exec(migration);
 
     const config = await getConfig();
 
+    // database setup transaction
+    const tx = db.transaction(async (rulesets: Record<string, number>) => {
+        for (const name in rulesets) {
+            const order = rulesets[name];
+
+            // create ruleset
+            const { id } = createRuleSetRecord(order, name);
+
+            // create rule groups with ruleset id
+            for (const group of config.groups) {
+                const filename = `${order}_${name}_${group}.txt`;
+                const path = join(config.rules_dir, filename);
+
+                const isFile = existsSync(path) && lstatSync(path).isFile();
+                if (!isFile) {
+                    // if file not exists or path is not a regular file, create
+                    // record with empty content.
+                    //
+                    // it's unnecessary to create missing files because they'll
+                    // be created by "generate" handler if records are created.
+                    createRuleGroup(id, group, "");
+                }
+
+                // get group content
+                const buffer = await readFile(path);
+                const content = buffer.toString();
+
+                createRuleGroup(id, group, content);
+            }
+        }
+    });
+
     // rule file name pattern
     const re = new RegExp(`^(\\d+)_(.*?)_(${config.groups.join("|")})\\.txt`);
 
-    // TODO: sort paths by order of `config.groups`, rather than filenames
-    // TODO: get rulesets and and create missing here, or you'll get incorrect
-    // group orders
-    //
-    // find all files in rules directory, get their paths.
-    //
-    // file list will be filtered in database setup transaction.
+    // find all rule files in rules directory. parse information from filenames.
     //
     // use sync API for simplicity.
-    const paths = readdirSync(config.rules_dir)
-        .map((entry) => join(config.rules_dir, entry))
-        .filter((path) => lstatSync(path).isFile());
+    const records = readdirSync(config.rules_dir)
+        .map((filename) => filename.match(re))
+        .filter((match) => match !== null)
+        .map((match) => {
+            const [_, orderStr, name] = match;
+            const order = parseInt(orderStr);
+            return { order, name };
+        });
 
-    // database setup transaction
-    const tx = db.transaction(async () => {
-        for (const path of paths) {
-            const filename = basename(path);
+    // get unique rulesets and their order
+    //
+    // Caveat: if a ruleset has multiple records with different orders, the last
+    // order is used. there is no grantee that every ruleset has a unique order.
+    const rulesets: Record<string, number> = {};
+    for (const record of records) {
+        rulesets[record.name] = record.order;
+    }
 
-            const match = filename.match(re);
-            // if not match, continue
-            if (!match) {
-                continue;
-            }
-            const [_, order, name, group]: string[] = match;
-
-            const ruleset = createRuleSetRecord(parseInt(order), name);
-
-            const content = await readFile(path);
-            createRuleGroup(ruleset.id, group, content.toString());
-        }
-    });
-
-    await tx();
-}
-
-/**
- * create missing group records according to ruleset records
- *
- * find all existing rulesets, for each ruleset, check whether all its groups
- * records exists. if a record is missing, it will be created with `content`
- * field set to an empty string.
- *
- * it's unnecessary to create missing files, since they'll be created by "generate"
- * handler if records are created.
- */
-async function createMissing() {
-    const config = await getConfig();
-
-    const tx = db.transaction((rulesets: RuleSet[]) => {
-        for (const ruleset of rulesets) {
-            for (const group of config.groups) {
-                // select group record by ruleset id and group name
-                const sql1 =
-                    "select id from rules where ruleset_id = ? and grp = ?;";
-                const stmt1 = db.prepare<[number, string], number>(sql1);
-
-                // if exists, continue
-                if (stmt1.get(ruleset.id, group) !== undefined) {
-                    continue;
-                }
-
-                // not exist, create record
-                const sql2 =
-                    "insert into rules (ruleset_id, grp) values (?, ?);";
-                const stmt2 = db.prepare<[number, string], void>(sql2);
-                stmt2.run(ruleset.id, group);
-            }
-        }
-    });
-
-    const sql = "select * from rulesets;";
-    const stmt = db.prepare<[], RuleSet>(sql);
-    const rulesets = stmt.all();
-
-    tx(rulesets);
+    await tx(rulesets);
 }
