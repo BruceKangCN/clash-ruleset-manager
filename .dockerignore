@@ -13,6 +13,5 @@ vitest.workspace.ts
 playwright.config.ts
 e2e
 
-# data and config
+# data
 /data
-/config

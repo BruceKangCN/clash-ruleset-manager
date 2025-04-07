@@ -14,10 +14,9 @@ EXPOSE 3000
 
 WORKDIR /app
 
-VOLUME [ "./config" ]
+VOLUME [ "./config", "./data/nodes", "./data/rules" ]
 
 COPY --from=builder [ \
-    "/workspace/build", \
     "/workspace/package.json", \
     "/workspace/package-lock.json", \
     "./" \
@@ -25,4 +24,8 @@ COPY --from=builder [ \
 
 RUN npm ci --omit dev
 
-CMD [ "node", "." ]
+COPY --from=builder /workspace/build build
+
+COPY --from=builder /workspace/config config
+
+CMD [ "node", "build" ]

@@ -30,6 +30,10 @@ async function migrate() {
     // rule file name pattern
     const re = new RegExp(`^(\\d+)_(.*?)_(${config.groups.join("|")})\\.txt`);
 
+    // TODO: sort paths by order of `config.groups`, rather than filenames
+    // TODO: get rulesets and and create missing here, or you'll get incorrect
+    // group orders
+    //
     // find all files in rules directory, get their paths.
     //
     // file list will be filtered in database setup transaction.
