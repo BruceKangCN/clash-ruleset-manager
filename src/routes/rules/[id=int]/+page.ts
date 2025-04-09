@@ -1,5 +1,5 @@
-import { Fetcher } from "$lib/fetcher.js";
-import type { RuleGroup, RuleSet } from "$lib/schema.js";
+import { Fetcher } from "$lib/fetcher";
+import type { RuleGroup, RuleSet } from "$lib/schema";
 
 export interface RuleGroupInfo {
     id: number;

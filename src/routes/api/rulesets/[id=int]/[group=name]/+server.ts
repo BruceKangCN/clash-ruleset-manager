@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import type { RuleGroup } from "$lib/schema.js";
+import type { RuleGroup } from "$lib/schema";
 
 /**
  * get rule group by ruleset id and group name

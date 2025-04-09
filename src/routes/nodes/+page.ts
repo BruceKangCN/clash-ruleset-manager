@@ -1,4 +1,4 @@
-import { Fetcher } from "$lib/fetcher.js";
+import { Fetcher } from "$lib/fetcher";
 import type { NodeGroup } from "$lib/types";
 
 export interface PageData {

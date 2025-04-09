@@ -2,7 +2,7 @@ import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import type { RuleSet } from "$lib/schema";
 import type { ReorderInfo } from "$lib/types";
-import { Fetcher } from "$lib/fetcher.js";
+import { Fetcher } from "$lib/fetcher";
 
 /**
  * get ruleset by id

@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { json } from "@sveltejs/kit";
-import { getConfig } from "$lib/server/config.js";
+import { getConfig } from "$lib/server/config";
 
 interface PatchData {
     content: string;

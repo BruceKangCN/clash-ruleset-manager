@@ -1,11 +1,11 @@
 import { readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { json } from "@sveltejs/kit";
-import { getConfig } from "$lib/server/config.js";
+import { getConfig } from "$lib/server/config";
 import { db } from "$lib/server/db";
 import type { RuleGroup, RuleSet } from "$lib/schema";
 import type { ReorderInfo } from "$lib/types";
-import { Fetcher } from "$lib/fetcher.js";
+import { Fetcher } from "$lib/fetcher";
 
 /**
  * get rulesets
