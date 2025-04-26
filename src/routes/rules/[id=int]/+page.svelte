@@ -36,7 +36,7 @@
 <div class="container mx-auto flex flex-col gap-4 p-4">
     <NameEditor bind:name {renameFn} />
 
-    {#each groups as group}
+    {#each groups as group (group.id)}
         <GroupEditor
             group={group.group}
             bind:content={group.content}

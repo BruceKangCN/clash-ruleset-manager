@@ -8,7 +8,7 @@
     interface Props {
         items: RuleSet[];
         removeFn: (id: number) => Promise<void>;
-        updateFn: (updates: App.ReorderInfo[]) => Promise<void>;
+        updateFn: (updates: ClashDashboard.ReorderInfo[]) => Promise<void>;
     }
 
     let { items = $bindable([]), removeFn, updateFn }: Props = $props();
@@ -39,8 +39,10 @@
             items = originalItems.map((item, i) => ({ ...item, ord: i + 1 }));
 
             // create update information using original items
-            const updates: App.ReorderInfo[] = items
-                .map((item) => ({ id: item.id, newOrder: item.ord }));
+            const updates: ClashDashboard.ReorderInfo[] = items.map((item) => ({
+                id: item.id,
+                newOrder: item.ord,
+            }));
 
             await updateFn(updates);
         } catch (err) {
@@ -60,10 +62,8 @@
     on:finalize={handleDndFinish}
 >
     {#each items as ruleset (ruleset.id)}
-        <RuleSetItem ruleset={ruleset} {removeFn} />
+        <RuleSetItem {ruleset} {removeFn} />
     {/each}
 </div>
 
-<Modal bind:open={showModal} size="xs" dismissable={false}>
-    排序中
-</Modal>
+<Modal bind:open={showModal} size="xs" dismissable={false}>排序中</Modal>

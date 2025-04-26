@@ -13,14 +13,16 @@ export async function GET() {
 
     const files = await readdir(nodes_dir);
 
-    const promises: Promise<App.NodeGroup>[] = files.map(async (filename) => {
-        const type = path.parse(filename).name;
+    const promises: Promise<ClashDashboard.NodeGroup>[] = files.map(
+        async (filename) => {
+            const type = path.parse(filename).name;
 
-        const filepath = path.join(nodes_dir, filename);
-        const content = (await readFile(filepath)).toString();
+            const filepath = path.join(nodes_dir, filename);
+            const content = (await readFile(filepath)).toString();
 
-        return { type, content };
-    });
+            return { type, content };
+        },
+    );
     const nodeGroups = await Promise.all(promises);
 
     return json(nodeGroups);

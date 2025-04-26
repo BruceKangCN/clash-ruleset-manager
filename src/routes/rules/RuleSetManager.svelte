@@ -41,7 +41,9 @@
         await rulesetsPromise;
     }
 
-    async function updateFn(updates: App.ReorderInfo[]): Promise<void> {
+    async function updateFn(
+        updates: ClashDashboard.ReorderInfo[],
+    ): Promise<void> {
         await fetcher.patch("/api/rulesets", { updates });
         // skip syncing with backend to improve user experience (skip reassigning
         // the `rulesetsPromise`, to prevent whole list update).

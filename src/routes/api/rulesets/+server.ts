@@ -66,7 +66,7 @@ export async function PUT({ request }) {
 }
 
 interface PatchData {
-    updates: App.ReorderInfo[];
+    updates: ClashDashboard.ReorderInfo[];
 }
 
 /**
@@ -74,7 +74,7 @@ interface PatchData {
  * @see ReorderInfo
  */
 export async function PATCH({ request }) {
-    const tx = db.transaction((updates: App.ReorderInfo[]) => {
+    const tx = db.transaction((updates: ClashDashboard.ReorderInfo[]) => {
         const sql = "update rulesets set ord = ? where id = ?;";
         const stmt = db.query<void, [number, number]>(sql);
         for (const info of updates) {

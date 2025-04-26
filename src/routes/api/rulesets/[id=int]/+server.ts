@@ -64,7 +64,7 @@ export async function DELETE({ params, fetch }) {
         const rulesets = stmt3.all(deletedOrder);
 
         // generate update information
-        const updates: App.ReorderInfo[] = rulesets.map((r) => ({
+        const updates: ClashDashboard.ReorderInfo[] = rulesets.map((r) => ({
             id: r.id,
             newOrder: r.ord - 1,
         }));
