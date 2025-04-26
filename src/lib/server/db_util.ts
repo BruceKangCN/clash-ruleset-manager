@@ -2,9 +2,8 @@ import type { RuleGroup, RuleSet } from "$lib/schema";
 import { db } from "./db";
 
 function tryGetRuleSet(name: string) {
-    const stmt = db.prepare<[string], RuleSet>(
-        "select * from rulesets where name = ?;",
-    );
+    const sql = "select * from rulesets where name = ?;";
+    const stmt = db.query<RuleSet, [string]>(sql);
     return stmt.get(name);
 }
 
@@ -15,7 +14,7 @@ export function createRuleSetRecord(order: number, name: string) {
     }
 
     const sql = "insert into rulesets (ord, name) values (?, ?) returning *;";
-    const stmt = db.prepare<[number, string], RuleSet>(sql);
+    const stmt = db.query<RuleSet, [number, string]>(sql);
     const row = stmt.get(order, name);
 
     if (!row) {
@@ -32,7 +31,7 @@ export function createRuleGroup(
 ) {
     const sql =
         "insert into rules (ruleset_id, grp, content) values (?, ?, ?) returning *;";
-    const stmt = db.prepare<[number, string, string], RuleGroup>(sql);
+    const stmt = db.query<RuleGroup, [number, string, string]>(sql);
     const row = stmt.get(rulesetId, group, content);
 
     if (!row) {

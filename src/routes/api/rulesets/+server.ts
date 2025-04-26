@@ -4,7 +4,6 @@ import { json } from "@sveltejs/kit";
 import { getConfig } from "$lib/server/config";
 import { db } from "$lib/server/db";
 import type { RuleGroup, RuleSet } from "$lib/schema";
-import type { ReorderInfo } from "$lib/types";
 import { Fetcher } from "$lib/fetcher";
 
 /**
@@ -13,7 +12,7 @@ import { Fetcher } from "$lib/fetcher";
  */
 export async function GET() {
     const sql = "select * from rulesets order by ord asc;";
-    const stmt = db.prepare<[], RuleSet>(sql);
+    const stmt = db.query<RuleSet, []>(sql);
     const rulesets = stmt.all();
 
     return json(rulesets);
@@ -33,7 +32,7 @@ export async function PUT({ request }) {
         // create ruleset, return id
         const sql =
             "insert into rulesets (ord, name) values (?, ?) returning *;";
-        const stmt = db.prepare<[number, string], RuleSet>(sql);
+        const stmt = db.query<RuleSet, [number, string]>(sql);
         const ruleset = stmt.get(order, name);
         if (!ruleset) {
             throw new Error("failed to create ruleset");
@@ -42,7 +41,7 @@ export async function PUT({ request }) {
         // create empty coresponding groups
         for (const group of config.groups) {
             const sql = "insert into rules (ruleset_id, grp) values (?, ?);";
-            const stmt = db.prepare<[number, string], void>(sql);
+            const stmt = db.query<void, [number, string]>(sql);
             stmt.run(ruleset.id, group);
         }
 
@@ -53,20 +52,21 @@ export async function PUT({ request }) {
     const { name }: PutData = await request.json();
 
     // get ruleset count, to generate proper order
-    const sql = "select count(*) from rulesets;";
-    const stmt = db.prepare<[], number>(sql).pluck();
-    const count = stmt.get();
-    if (!count) {
+    const sql = "select count(*) as count from rulesets;";
+    const stmt = db.query<{ count: number }, []>(sql);
+    const result = stmt.get();
+    if (!result) {
         throw new Error("failed to get ruleset count");
     }
 
+    const { count } = result;
     const ruleset = tx(count + 1, name);
 
     return json(ruleset);
 }
 
 interface PatchData {
-    updates: ReorderInfo[];
+    updates: App.ReorderInfo[];
 }
 
 /**
@@ -74,9 +74,9 @@ interface PatchData {
  * @see ReorderInfo
  */
 export async function PATCH({ request }) {
-    const tx = db.transaction((updates: ReorderInfo[]) => {
+    const tx = db.transaction((updates: App.ReorderInfo[]) => {
         const sql = "update rulesets set ord = ? where id = ?;";
-        const stmt = db.prepare<[number, number], void>(sql);
+        const stmt = db.query<void, [number, number]>(sql);
         for (const info of updates) {
             stmt.run(info.newOrder, info.id);
         }

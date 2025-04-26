@@ -8,7 +8,7 @@ import type { RuleGroup } from "$lib/schema";
  */
 export async function GET({ params }) {
     const sql = "select * from rules where ruleset_id = ? and grp = ?;";
-    const stmt = db.prepare<[number, string], RuleGroup>(sql);
+    const stmt = db.query<RuleGroup, [number, string]>(sql);
 
     const id = parseInt(params.id);
     const group = params.group;
@@ -36,7 +36,7 @@ export async function PATCH({ params, request }) {
 
     const sql =
         "update rules set content = ? where ruleset_id = ? and grp = ?;";
-    const stmt = db.prepare<[string, number, string], void>(sql);
+    const stmt = db.query<void, [string, number, string]>(sql);
     stmt.run(content, id, group);
 
     return json({});

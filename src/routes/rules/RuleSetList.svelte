@@ -2,14 +2,13 @@
     import { Modal } from "flowbite-svelte";
     import { dndzone, type DndEvent } from "svelte-dnd-action";
     import type { RuleSet } from "$lib/schema";
-    import type { ReorderInfo } from "$lib/types";
     import { getToastContext } from "$lib/toast";
     import RuleSetItem from "./RuleSetItem.svelte";
 
     interface Props {
         items: RuleSet[];
         removeFn: (id: number) => Promise<void>;
-        updateFn: (updates: ReorderInfo[]) => Promise<void>;
+        updateFn: (updates: App.ReorderInfo[]) => Promise<void>;
     }
 
     let { items = $bindable([]), removeFn, updateFn }: Props = $props();
@@ -40,7 +39,7 @@
             items = originalItems.map((item, i) => ({ ...item, ord: i + 1 }));
 
             // create update information using original items
-            const updates: ReorderInfo[] = items
+            const updates: App.ReorderInfo[] = items
                 .map((item) => ({ id: item.id, newOrder: item.ord }));
 
             await updateFn(updates);

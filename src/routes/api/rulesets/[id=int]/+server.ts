@@ -1,7 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import type { RuleSet } from "$lib/schema";
-import type { ReorderInfo } from "$lib/types";
 import { Fetcher } from "$lib/fetcher";
 
 /**
@@ -10,7 +9,7 @@ import { Fetcher } from "$lib/fetcher";
  */
 export async function GET({ params }) {
     const sql = "select * from rulesets where id = ?;";
-    const stmt = db.prepare<[number], RuleSet>(sql);
+    const stmt = db.query<RuleSet, [number]>(sql);
     const ruleset = stmt.get(parseInt(params.id));
 
     if (!ruleset) {
@@ -32,7 +31,7 @@ export async function PATCH({ params, request }) {
     const { name }: PatchData = await request.json();
 
     const sql = "update rulesets set name = ? where id = ?;";
-    const stmt = db.prepare<[string, number], void>(sql);
+    const stmt = db.query<void, [string, number]>(sql);
     stmt.run(name, id);
 
     return json({});
@@ -47,12 +46,12 @@ export async function DELETE({ params, fetch }) {
     const tx = db.transaction(async (id: number) => {
         // delete associated rules first, to fulfil foreign key constrain
         const sql1 = "delete from rules where ruleset_id = ?;";
-        const stmt1 = db.prepare<[number], void>(sql1);
+        const stmt1 = db.query<void, [number]>(sql1);
         stmt1.run(id);
 
         // delete ruleset, return order
         const sql2 = "delete from rulesets where id = ? returning ord;";
-        const stmt2 = db.prepare<[number], { ord: number }>(sql2);
+        const stmt2 = db.query<{ ord: number }, [number]>(sql2);
         const rec2 = stmt2.get(id);
         if (!rec2) {
             throw new Error("failed to delete ruleset record");
@@ -61,11 +60,11 @@ export async function DELETE({ params, fetch }) {
 
         // find rulesets to be reordered
         const sql3 = "select * from rulesets where ord > ?;";
-        const stmt3 = db.prepare<[number], RuleSet>(sql3);
+        const stmt3 = db.query<RuleSet, [number]>(sql3);
         const rulesets = stmt3.all(deletedOrder);
 
         // generate update information
-        const updates: ReorderInfo[] = rulesets.map((r) => ({
+        const updates: App.ReorderInfo[] = rulesets.map((r) => ({
             id: r.id,
             newOrder: r.ord - 1,
         }));

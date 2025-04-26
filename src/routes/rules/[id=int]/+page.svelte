@@ -28,7 +28,7 @@
             await fetcher.patch(`/api/rulesets/${id}/${group}`, { content });
             createToast("success", "规则组更新成功");
         } catch (err) {
-            createToast("error", "规则组更新失败：${err}");
+            createToast("error", `规则组更新失败：${err}`);
         }
     }
 </script>

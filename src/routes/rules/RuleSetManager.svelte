@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button, Tooltip } from "flowbite-svelte";
     import type { RuleSet } from "$lib/schema";
-    import type { ReorderInfo } from "$lib/types";
     import RuleSetList from "./RuleSetList.svelte";
     import RuleSetCreationForm from "./RuleSetCreationForm.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
@@ -42,7 +41,7 @@
         await rulesetsPromise;
     }
 
-    async function updateFn(updates: ReorderInfo[]): Promise<void> {
+    async function updateFn(updates: App.ReorderInfo[]): Promise<void> {
         await fetcher.patch("/api/rulesets", { updates });
         // skip syncing with backend to improve user experience (skip reassigning
         // the `rulesetsPromise`, to prevent whole list update).

@@ -1,0 +1,4 @@
+- [x] replace `better-sqlite3` with `bun:sqlite`
+- [x] fix unsupported protocol 'bun:'
+- [ ] add documentation for code
+- [ ] add documentation in index page

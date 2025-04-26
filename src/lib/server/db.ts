@@ -1,3 +1,3 @@
-import SQLite3 from "better-sqlite3";
+import { Database } from "bun:sqlite";
 
-export const db = new SQLite3(":memory:");
+export const db = new Database(":memory:");

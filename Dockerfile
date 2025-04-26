@@ -1,14 +1,12 @@
-FROM node:bookworm-slim AS builder
+FROM oven/bun:1.2.10-slim AS builder
 
 WORKDIR /workspace
 
 COPY . .
 
-RUN npm install
+RUN bun install && bun --bun run build
 
-RUN npm run build
-
-FROM node:bookworm-slim AS app
+FROM oven/bun:1.2.10-slim AS app
 
 EXPOSE 3000
 
@@ -18,14 +16,12 @@ VOLUME [ "./config", "./data/nodes", "./data/rules" ]
 
 COPY --from=builder [ \
     "/workspace/package.json", \
-    "/workspace/package-lock.json", \
+    "/workspace/bun.lock", \
     "./" \
 ]
-
-RUN npm ci --omit dev
-
 COPY --from=builder /workspace/build build
-
 COPY --from=builder /workspace/config config
 
-CMD [ "node", "build" ]
+RUN bun install --production
+
+CMD [ "bun", "run", "./build" ]

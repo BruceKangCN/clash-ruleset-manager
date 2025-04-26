@@ -8,7 +8,7 @@ import { db } from "$lib/server/db";
  */
 export async function GET({ params }) {
     const sql = "select * from rules where ruleset_id = ?;";
-    const stmt = db.prepare<[number], RuleGroup>(sql);
+    const stmt = db.query<RuleGroup, [number]>(sql);
     const ruleGroups = stmt.all(parseInt(params.id));
 
     return json(ruleGroups);
