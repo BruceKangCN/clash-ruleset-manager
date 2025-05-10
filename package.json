@@ -16,6 +16,7 @@
         "e2e": "playwright test"
     },
     "dependencies": {
+        "@bruce/rest-client": "npm:@jsr/bruce__rest-client",
         "js-yaml": "^4.1.0"
     },
     "devDependencies": {

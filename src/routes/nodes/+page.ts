@@ -1,6 +1,8 @@
+import { NodeClient } from "$lib/api";
+
 export async function load({ fetch }) {
-    const resp = await fetch("/api/nodes");
-    const nodeGroups: ClashDashboard.NodeGroup[] = await resp.json();
+    const node = new NodeClient(fetch);
+    const nodeGroups = await node.getAllGroups();
 
     return { nodeGroups };
 }

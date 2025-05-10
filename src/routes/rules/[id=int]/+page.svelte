@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Fetcher } from "$lib/fetcher";
+    import { RuleSetClient } from "$lib/api";
     import type { PageProps } from "./$types";
     import NameEditor from "./NameEditor.svelte";
     import GroupEditor from "./GroupEditor.svelte";
@@ -11,13 +11,13 @@
     const groups = data.groups;
     let name = $state(data.name);
 
-    const fetcher = Fetcher.wrap(fetch);
+    const ruleset = new RuleSetClient();
     const createToast = getToastContext();
 
     /** ruleset rename handler */
     async function renameFn(name: string): Promise<void> {
         try {
-            await fetcher.patch(`/api/rulesets/${id}`, { name });
+            ruleset.renameRuleSet(id, name);
             createToast("success", "规则集改名成功");
         } catch (err) {
             createToast("error", `规则集改名失败：${err}`);
@@ -27,7 +27,7 @@
     /** rule group content update handler */
     async function updateFn(group: string, content: string): Promise<void> {
         try {
-            await fetcher.patch(`/api/rulesets/${id}/${group}`, { content });
+            await ruleset.updateRuleGroupContent(id, group, content);
             createToast("success", "规则组更新成功");
         } catch (err) {
             createToast("error", `规则组更新失败：${err}`);

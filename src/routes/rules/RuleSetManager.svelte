@@ -1,16 +1,13 @@
 <script lang="ts">
+    import { RuleSetClient } from "$lib/api";
     import { Button, Tooltip } from "flowbite-svelte";
     import type { RuleSet } from "$lib/schema";
     import RuleSetList from "./RuleSetList.svelte";
     import RuleSetCreationForm from "./RuleSetCreationForm.svelte";
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
-    import { Fetcher } from "$lib/fetcher";
     import { getToastContext } from "$lib/toast";
 
-    // `fetcher` and `createToast` must be initialized before `rulesetsPromise`,
-    // because it is initialized by `getRuleSets`, which uses `fetcher` and
-    // `createToast` inside.
-    const fetcher = Fetcher.wrap(fetch);
+    const ruleset = new RuleSetClient();
     const createToast = getToastContext();
 
     let rulesetsPromise: Promise<RuleSet[]> = $state(getRuleSets());
@@ -23,8 +20,7 @@
     /** get all rulesets */
     async function getRuleSets(): Promise<RuleSet[]> {
         try {
-            const rulesets: RuleSet[] = await fetcher.get("/api/rulesets");
-            return rulesets;
+            return await ruleset.getAllRuleSets();
         } catch (err) {
             createToast("error", `规则集获取失败：${err}`);
             return [];
@@ -34,7 +30,7 @@
     /** remove ruleset by ID */
     async function removeFn(id: number): Promise<void> {
         try {
-            await fetcher.delete(`/api/rulesets/${id}`);
+            await ruleset.deleteRuleSet(id);
             createToast("success", "规则集删除成功");
         } catch (err) {
             createToast("error", `规则集删除失败：${err}`);
@@ -47,7 +43,7 @@
     async function updateFn(
         updates: ClashDashboard.ReorderInfo[],
     ): Promise<void> {
-        await fetcher.patch("/api/rulesets", { updates });
+        await ruleset.reorderRuleSets(updates);
         // skip syncing with backend to improve user experience (skip reassigning
         // the `rulesetsPromise`, to prevent whole list update).
         //
@@ -57,7 +53,7 @@
     /** create ruleset with name `name`, set order to the last */
     async function createFn(name: string): Promise<void> {
         try {
-            await fetcher.put("/api/rulesets", { name });
+            await ruleset.createRuleSet(name);
             createToast("success", "规则集创建成功");
         } catch (err) {
             createToast("error", `规则集创建失败：${err}`);
@@ -69,7 +65,7 @@
     /** generate ruleset files */
     async function generate(): Promise<void> {
         try {
-            await fetcher.post("/api/rulesets");
+            await ruleset.generate();
             createToast("success", "规则文件生成成功");
         } catch (err) {
             createToast("error", `规则文件生成失败：${err}`);
