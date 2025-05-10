@@ -1,22 +1,15 @@
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/server/db";
-import type { RuleGroup } from "$lib/schema";
+import { getRuleGroup, updateRuleGroupContent } from "$lib/server/rules";
 
 /**
  * get rule group by ruleset id and group name
  * @see RuleGroup
  */
 export async function GET({ params }) {
-    const sql = "select * from rules where ruleset_id = ? and grp = ?;";
-    const stmt = db.query<RuleGroup, [number, string]>(sql);
-
     const id = parseInt(params.id);
     const group = params.group;
-    const ruleGroup = stmt.get(id, group);
 
-    if (!ruleGroup) {
-        throw new Error("rule group not exist");
-    }
+    const ruleGroup = getRuleGroup(id, group);
 
     return json(ruleGroup);
 }
@@ -34,10 +27,7 @@ export async function PATCH({ params, request }) {
     const group = params.group;
     const { content }: PatchData = await request.json();
 
-    const sql =
-        "update rules set content = ? where ruleset_id = ? and grp = ?;";
-    const stmt = db.query<void, [string, number, string]>(sql);
-    stmt.run(content, id, group);
+    updateRuleGroupContent(id, group, content);
 
     return json({});
 }

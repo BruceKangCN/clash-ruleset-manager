@@ -1,15 +1,13 @@
 import { json } from "@sveltejs/kit";
-import type { RuleGroup } from "$lib/schema";
-import { db } from "$lib/server/db";
+import { getAllRuleGroups } from "$lib/server/rules";
 
 /**
  * get all rule groups owned by a ruleset, whose id equals `id`
  * @see RuleGroup
  */
 export async function GET({ params }) {
-    const sql = "select * from rules where ruleset_id = ?;";
-    const stmt = db.query<RuleGroup, [number]>(sql);
-    const ruleGroups = stmt.all(parseInt(params.id));
+    const id = parseInt(params.id);
+    const ruleGroups = await getAllRuleGroups(id);
 
     return json(ruleGroups);
 }
