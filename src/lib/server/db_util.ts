@@ -1,13 +1,27 @@
 import type { RuleGroup, RuleSet } from "$lib/schema";
 import { db } from "./db";
 
-function tryGetRuleSet(name: string) {
+/**
+ * utility to query for a maybe non-exist ruleset record.
+ * @see getRuleSetRecord
+ */
+function tryGetRuleSet(name: string): RuleSet | null {
     const sql = "select * from rulesets where name = ?;";
     const stmt = db.query<RuleSet, [string]>(sql);
     return stmt.get(name);
 }
 
-export function createRuleSetRecord(order: number, name: string) {
+/**
+ * get coresponding ruleset record, create if not exists.
+ *
+ * this is a utility funcition to ensure ruleset record exists before creating
+ * rule group of the ruleset, or ruleset be the same across rule groups.
+ *
+ * @param order ruleset order
+ * @param name ruleset name
+ * @returns the already-existed or newly created ruleset record
+ */
+export function getRuleSetRecord(order: number, name: string): RuleSet {
     const existedRecord = tryGetRuleSet(name);
     if (existedRecord) {
         return existedRecord;
@@ -24,6 +38,13 @@ export function createRuleSetRecord(order: number, name: string) {
     return row;
 }
 
+/**
+ * create a group record.
+ * @param rulesetId ruleset ID
+ * @param group group name
+ * @param content group content
+ * @returns group record
+ */
 export function createRuleGroup(
     rulesetId: number,
     group: string,

@@ -3,7 +3,7 @@ import { existsSync, lstatSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { getConfig } from "$lib/server/config";
 import { db } from "$lib/server/db";
-import { createRuleGroup, createRuleSetRecord } from "$lib/server/db_util";
+import { createRuleGroup, getRuleSetRecord } from "$lib/server/db_util";
 import migration from "./migration.sql?raw";
 
 export async function init() {
@@ -34,7 +34,7 @@ async function migrate() {
             const order = rulesets[name];
 
             // create ruleset
-            const { id } = createRuleSetRecord(order, name);
+            const { id } = getRuleSetRecord(order, name);
 
             // create rule groups with ruleset id
             for (const group of config.groups) {

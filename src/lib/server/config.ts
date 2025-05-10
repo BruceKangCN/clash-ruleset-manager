@@ -8,6 +8,7 @@ interface SystemConfig {
 }
 
 interface UserConfig {
+    /** rule groups, e.g. "ip", "ym" */
     groups: string[];
 }
 
@@ -18,6 +19,15 @@ const systemConfig: SystemConfig = {
     rules_dir: "data/rules",
 };
 
+/**
+ * parse configuration from file and return it.
+ *
+ * read file located at `./config/app.yaml`. parse its content as `UserConfig`.
+ * merge parsed configuration with `systemConfig` and return.
+ *
+ * @see systemConfig
+ * @returns configuration
+ */
 export async function getConfig(): Promise<Config> {
     const configFile = join(process.cwd(), "config", "app.yaml");
     const buffer = await readFile(configFile);
