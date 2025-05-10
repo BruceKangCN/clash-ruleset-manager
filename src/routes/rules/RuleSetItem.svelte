@@ -14,20 +14,20 @@
     let showModal = $state(false);
 </script>
 
-<Card horizontal padding="sm" size="md" class="items-center gap-2">
+<Card horizontal size="md" class="items-center px-4 py-2 gap-2">
     <span class="flex grow">{ruleset.ord} - {ruleset.name}</span>
 
     <div class="flex-none">
         <Button
             color="red"
-            on:click={() => {
+            onclick={() => {
                 showModal = true;
             }}
         >
             移除
         </Button>
         <Button
-            on:click={() => {
+            onclick={() => {
                 goto(`rules/${ruleset.id}`);
             }}
         >

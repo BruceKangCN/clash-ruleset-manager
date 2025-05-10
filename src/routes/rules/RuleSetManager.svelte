@@ -85,7 +85,7 @@
 
     <Button
         id="generate-btn"
-        on:click={() => {
+        onclick={() => {
             showModal = true;
         }}>生成</Button
     >

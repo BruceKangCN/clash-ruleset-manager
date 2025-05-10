@@ -42,8 +42,8 @@
     <div class="text-center">
         <p class="font-bold mb-4">是否执行操作？</p>
         <div class="flex justify-center gap-2">
-            <Button on:click={execAction} disabled={pending}>是</Button>
-            <Button color="alternative" on:click={close} disabled={pending}
+            <Button onclick={execAction} disabled={pending}>是</Button>
+            <Button color="alternative" onclick={close} disabled={pending}
                 >否</Button
             >
         </div>

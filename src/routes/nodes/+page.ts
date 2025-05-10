@@ -1,13 +1,6 @@
-import { Fetcher } from "$lib/fetcher";
-
-export interface PageData {
-    nodeGroups: ClashDashboard.NodeGroup[];
-}
-
-export async function load({ fetch }): Promise<PageData> {
-    const fetcher = Fetcher.wrap(fetch);
-    const nodeGroups: ClashDashboard.NodeGroup[] =
-        await fetcher.get("/api/nodes");
+export async function load({ fetch }) {
+    const resp = await fetch("/api/nodes");
+    const nodeGroups: ClashDashboard.NodeGroup[] = await resp.json();
 
     return { nodeGroups };
 }

@@ -33,7 +33,7 @@ export class Fetcher {
 
     async options(input: Input, options?: Options): Promise<string[]> {
         // options request cannot have a request body, so `data` is `undefined`
-        const init = this.json("HEAD", undefined, options);
+        const init = this.json("OPTIONS", undefined, options);
 
         // options response only contains headers
         const { headers } = await this.#fetch(input, init);
@@ -86,3 +86,5 @@ export class Fetcher {
         return await resp.json();
     }
 }
+
+export const fetcher = Fetcher.wrap(fetch);

@@ -30,7 +30,7 @@
 
         <div class="flex-none">
             <Button
-                on:click={() => {
+                onclick={() => {
                     showModal = true;
                 }}
             >

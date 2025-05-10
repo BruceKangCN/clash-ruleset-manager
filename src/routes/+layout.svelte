@@ -6,7 +6,7 @@
         NavLi,
         NavUl,
         Toast,
-        type ColorVariant,
+        type ToastProps,
     } from "flowbite-svelte";
     import { setToastContext, type ToastType } from "$lib/toast";
 
@@ -16,7 +16,7 @@
 
     interface ToastInfo {
         id: number;
-        color: ColorVariant;
+        color: ToastProps["color"];
         msg: string;
     }
 
@@ -32,7 +32,7 @@
         toasts = toasts.filter((toast) => toast.id !== id);
     }
 
-    function getToastColor(type: ToastType): ColorVariant {
+    function getToastColor(type: ToastType): ToastProps["color"] {
         switch (type) {
             case "success":
                 return "green";
@@ -47,7 +47,17 @@
 </script>
 
 <header class="header">
-    <Navbar class="p-2 border-b" data-testid="nav-bar">
+    <Navbar
+        class={[
+            "p-2",
+            "border-b",
+            "border-gray-300",
+            "bg-gray-200",
+            "dark:border-gray-700",
+            "dark:bg-gray-800",
+        ]}
+        data-testid="nav-bar"
+    >
         <NavBrand href="/">
             <img src="/favicon.png" class="me-3 h-6" alt="Tauri Logo" />
             <span class="title">Clash 配置管理</span>
@@ -70,7 +80,7 @@
     {#each toasts as toast (toast.id)}
         <Toast
             color={toast.color}
-            on:close={() => {
+            onclose={() => {
                 closeToast(toast.id);
             }}
         >
