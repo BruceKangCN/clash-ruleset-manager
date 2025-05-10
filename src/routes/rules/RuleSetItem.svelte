@@ -5,7 +5,9 @@
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     interface Props {
+        /** the ruleset held by this component */
         ruleset: RuleSet;
+        /** ruleset removal handler */
         removeFn: (id: number) => Promise<void>;
     }
 
@@ -15,8 +17,10 @@
 </script>
 
 <Card horizontal size="md" class="items-center px-4 py-2 gap-2">
+    <!-- label to display ruleset summary -->
     <span class="flex grow">{ruleset.ord} - {ruleset.name}</span>
 
+    <!-- begin: action area -->
     <div class="flex-none">
         <Button
             color="red"
@@ -34,6 +38,7 @@
             编辑
         </Button>
     </div>
+    <!-- end: action area -->
 </Card>
 
 <ConfirmModal

@@ -3,8 +3,11 @@
     import ConfirmModal from "$lib/components/ConfirmModal.svelte";
 
     interface Props {
+        /** name of the rule group held by this component */
         group: string;
+        /** content of the rule group held by this component */
         content: string;
+        /** rule group content update handler */
         updateFn: (group: string, content: string) => Promise<void>;
     }
 
@@ -29,6 +32,7 @@
 </script>
 
 <div class="flex flex-col gap-2">
+    <!-- begin: title bar -->
     <div class="flex flex-row items-center gap-2">
         <Heading tag="h3" class="flex grow">{getGroupNameByKey(group)}</Heading>
 
@@ -42,6 +46,7 @@
             </Button>
         </div>
     </div>
+    <!-- end: title bar -->
 
     <Textarea bind:value={content} rows={6} class="font-mono text-nowrap" />
 </div>

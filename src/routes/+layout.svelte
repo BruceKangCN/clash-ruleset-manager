@@ -21,6 +21,7 @@
     }
 
     let id = 0;
+    /** create toast with color according to type and an auto-incremental ID. */
     function createToast(type: ToastType, msg: string) {
         const color = getToastColor(type);
         toasts.push({ id, color, msg });
@@ -32,6 +33,7 @@
         toasts = toasts.filter((toast) => toast.id !== id);
     }
 
+    /** get color for toast according to toast type */
     function getToastColor(type: ToastType): ToastProps["color"] {
         switch (type) {
             case "success":
@@ -46,6 +48,7 @@
     }
 </script>
 
+<!-- header bar (a.k.a. navigation bar) -->
 <header class="header">
     <Navbar
         class={[
@@ -56,7 +59,7 @@
             "dark:border-gray-700",
             "dark:bg-gray-800",
         ]}
-        data-testid="nav-bar"
+        data-test-id="nav-bar"
     >
         <NavBrand href="/">
             <img src="/favicon.png" class="me-3 h-6" alt="Tauri Logo" />
@@ -74,8 +77,10 @@
     </Navbar>
 </header>
 
+<!-- main content -->
 {@render children()}
 
+<!-- toast area -->
 <div class="toast-area z-50">
     {#each toasts as toast (toast.id)}
         <Toast

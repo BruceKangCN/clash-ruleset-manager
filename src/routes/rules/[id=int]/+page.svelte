@@ -8,12 +8,13 @@
     const { data }: PageProps = $props();
 
     const id = data.id;
+    const groups = data.groups;
     let name = $state(data.name);
-    let groups = $state(data.groups);
 
     const fetcher = Fetcher.wrap(fetch);
     const createToast = getToastContext();
 
+    /** ruleset rename handler */
     async function renameFn(name: string): Promise<void> {
         try {
             await fetcher.patch(`/api/rulesets/${id}`, { name });
@@ -23,6 +24,7 @@
         }
     }
 
+    /** rule group content update handler */
     async function updateFn(group: string, content: string): Promise<void> {
         try {
             await fetcher.patch(`/api/rulesets/${id}/${group}`, { content });

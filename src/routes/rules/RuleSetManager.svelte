@@ -20,6 +20,7 @@
      */
     let showModal = $state(false);
 
+    /** get all rulesets */
     async function getRuleSets(): Promise<RuleSet[]> {
         try {
             const rulesets: RuleSet[] = await fetcher.get("/api/rulesets");
@@ -30,6 +31,7 @@
         }
     }
 
+    /** remove ruleset by ID */
     async function removeFn(id: number): Promise<void> {
         try {
             await fetcher.delete(`/api/rulesets/${id}`);
@@ -41,6 +43,7 @@
         await rulesetsPromise;
     }
 
+    /** reorder rulesets */
     async function updateFn(
         updates: ClashDashboard.ReorderInfo[],
     ): Promise<void> {
@@ -51,6 +54,7 @@
         // full order update may be needed to ensure proper orders.
     }
 
+    /** create ruleset with name `name`, set order to the last */
     async function createFn(name: string): Promise<void> {
         try {
             await fetcher.put("/api/rulesets", { name });
@@ -62,6 +66,7 @@
         await rulesetsPromise;
     }
 
+    /** generate ruleset files */
     async function generate(): Promise<void> {
         try {
             await fetcher.post("/api/rulesets");
@@ -83,6 +88,7 @@
 <footer class="footer">
     <RuleSetCreationForm {createFn} />
 
+    <!-- begin: "generate" button and its tooltip -->
     <Button
         id="generate-btn"
         onclick={() => {
@@ -96,6 +102,7 @@
             请注意：该操作将清除输出文件夹中原有的文件！
         </p>
     </Tooltip>
+    <!-- end: "generate" button and its tooltip -->
 </footer>
 
 <ConfirmModal

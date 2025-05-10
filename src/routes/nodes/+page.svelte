@@ -5,11 +5,16 @@
     import { Fetcher } from "$lib/fetcher";
 
     const { data }: PageProps = $props();
-    let groups = $state(data.nodeGroups);
+    const groups = data.nodeGroups;
 
     const fetcher = Fetcher.wrap(fetch);
     const createToast = getToastContext();
 
+    /**
+     * update handler
+     * @param type node group type (e.g. subscription / self-hosted)
+     * @param content content used to overwrite the group
+     */
     async function updateFn(type: string, content: string): Promise<void> {
         try {
             await fetcher.patch(`/api/nodes/${type}`, { content });

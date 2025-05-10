@@ -6,8 +6,11 @@
     import RuleSetItem from "./RuleSetItem.svelte";
 
     interface Props {
+        /** containing rulesets */
         items: RuleSet[];
+        /** ruleset removal handler */
         removeFn: (id: number) => Promise<void>;
+        /** ruleset reorder handler */
         updateFn: (updates: ClashDashboard.ReorderInfo[]) => Promise<void>;
     }
 

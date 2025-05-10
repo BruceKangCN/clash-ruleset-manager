@@ -3,6 +3,7 @@
     import { Input, Button } from "flowbite-svelte";
 
     interface Props {
+        /** ruleset creation handler */
         createFn: (name: string) => Promise<void>;
     }
 
@@ -11,6 +12,7 @@
     let newRuleSetName = $state("");
     let showModal = $state(false);
 
+    /** ruleset creation request submission handler */
     async function onsubmit(evt: SubmitEvent): Promise<void> {
         evt.preventDefault();
         showModal = true;
