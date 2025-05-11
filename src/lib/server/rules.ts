@@ -40,16 +40,8 @@ export async function getRuleSet(id: number) {
 export async function createRuleSet(name: string) {
     const config = await getConfig();
 
-    const tx = db.transaction((order: number, name: string) => {
-        // create ruleset, return id
-        const sql =
-            "insert into rulesets (ord, name) values (?, ?) returning *;";
-        const stmt = db.query<RuleSet, [number, string]>(sql);
-        const ruleset = stmt.get(order, name);
-        if (!ruleset) {
-            throw new Error("failed to create ruleset");
-        }
-
+    // transaction to create rule groups for a ruleset
+    const tx = db.transaction((ruleset: RuleSet) => {
         // create empty coresponding groups
         for (const group of config.groups) {
             const sql = "insert into rules (ruleset_id, grp) values (?, ?);";
@@ -62,15 +54,24 @@ export async function createRuleSet(name: string) {
     });
 
     // get ruleset count, to generate proper order
-    const sql = "select count(*) as count from rulesets;";
-    const stmt = db.query<{ count: number }, []>(sql);
-    const result = stmt.get();
+    const sql1 = "select count(*) as count from rulesets;";
+    const stmt1 = db.query<{ count: number }, []>(sql1);
+    const result = stmt1.get();
     if (!result) {
         throw new Error("failed to get ruleset count");
     }
-
     const { count } = result;
-    const ruleset = tx(count + 1, name);
+
+    // create ruleset, return id
+    const sql2 = "insert into rulesets (ord, name) values (?, ?) returning *;";
+    const stmt2 = db.query<RuleSet, [number, string]>(sql2);
+    const ruleset = stmt2.get(count + 1, name);
+    if (!ruleset) {
+        throw new Error("failed to create ruleset");
+    }
+
+    // create rule groups for the ruleset
+    tx(ruleset);
 
     return ruleset;
 }

@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { exists, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getConfig } from "$lib/server/config";
 
@@ -24,6 +24,18 @@ export async function getNodes() {
     );
 
     return await Promise.all(promises);
+}
+
+/**
+ * check if a group exists
+ */
+export async function checkGroupExists(group: string): Promise<boolean> {
+    const config = await getConfig();
+
+    const filename = `${group}.txt`;
+    const filepath = path.join(config.nodes_dir, filename);
+
+    return await exists(filepath);
 }
 
 /**

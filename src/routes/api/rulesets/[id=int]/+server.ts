@@ -2,8 +2,12 @@ import { json } from "@sveltejs/kit";
 import { deleteRuleSet, getRuleSet, renameRuleSet } from "$lib/server/rules";
 
 /**
- * get ruleset by id
- * @see RuleSet
+ * @api {get} /api/rulesets/:id get ruleset by ID
+ * @apiName GetRuleSetByID
+ * @apiGroup Rule
+ * @apiDescription get ruleset by ID. return the ruleset.
+ *
+ * @apiParam {Number} id ID of the ruleset
  */
 export async function GET({ params }) {
     const id = parseInt(params.id);
@@ -17,7 +21,14 @@ interface PatchData {
 }
 
 /**
- * rename a ruleset
+ * @api {patch} /api/rulesets/:id rename ruleset by ID
+ * @apiName RenameRuleSetByID
+ * @apiGroup Rule
+ * @apiDescription rename ruleset whose ID equals `id`. return the nothing.
+ *
+ * @apiParam {Number} id ID of the ruleset
+ *
+ * @apiBody {String} name new name
  */
 export async function PATCH({ params, request }) {
     const id = parseInt(params.id);
@@ -29,7 +40,13 @@ export async function PATCH({ params, request }) {
 }
 
 /**
- * delete a rulesets and its coresponding rule groups, reorder rest rulesets.
+ * @api {delete} /api/rulesets/:id delete ruleset by ID
+ * @apiName DeleteRuleSetByID
+ * @apiGroup Rule
+ * @apiDescription delete ruleset whose ID equals `id`, and its relative rule
+ * groups. return the nothing.
+ *
+ * @apiParam {Number} id ID of the ruleset
  */
 export async function DELETE({ params }) {
     const id = parseInt(params.id);

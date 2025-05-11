@@ -6,6 +6,7 @@
 - [x] fix unsupported protocol 'bun:'
 - [x] add documentation for code
 - [x] replace fetcher with jsr:@bruce/rest-client
+- [ ] add apidoc
 - [ ] add documentation in index page
 - [ ] add tests
 - [ ] _replace TailwindCSS with UnoCSS (currently buggy for Svelte 5)_

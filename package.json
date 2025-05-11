@@ -2,6 +2,7 @@
     "name": "clash-dashboard",
     "private": true,
     "version": "1.0.2",
+    "description": "Clash rulesets and nodes management dashboard",
     "type": "module",
     "scripts": {
         "dev": "vite dev",

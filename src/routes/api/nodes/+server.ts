@@ -2,8 +2,12 @@ import { json } from "@sveltejs/kit";
 import { getNodes } from "$lib/server/nodes";
 
 /**
- * get node groups
- * @returns node groups
+ * @api {get} /api/nodes get node groups
+ * @apiName GetNodeGroups
+ * @apiGroup Node
+ * @apiDescription get all node groups
+ *
+ * @apiSuccess {ClashDashboard.NodeGroup[]} node groups
  */
 export async function GET() {
     const nodeGroups = await getNodes();
