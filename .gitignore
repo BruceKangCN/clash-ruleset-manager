@@ -11,6 +11,12 @@ node_modules
 /coverage
 /doc
 
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
 # OS
 .DS_Store
 Thumbs.db
