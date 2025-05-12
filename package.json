@@ -1,7 +1,7 @@
 {
     "name": "clash-dashboard",
     "private": true,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Clash rulesets and nodes management dashboard",
     "type": "module",
     "scripts": {

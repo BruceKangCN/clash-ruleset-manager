@@ -1,4 +1,6 @@
-# Main Goals
+# TODO
+
+## Main Goals
 
 - [x] port flowbit-svelte to version 1
 - [x] extract service handlers in API routes to `$lib/server/{API-group}.ts`
@@ -7,8 +9,8 @@
 - [x] add documentation for code
 - [x] replace fetcher with jsr:@bruce/rest-client
 - [x] add apidoc
-- [ ] add documentation in index page
+- [x] add documentation in index page
 - [ ] add tests
 - [ ] _replace TailwindCSS with UnoCSS (currently buggy for Svelte 5)_
 
-## Maybe not Supported
+## Need Support
