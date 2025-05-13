@@ -2,6 +2,7 @@
     import { Heading, P, Span } from "flowbite-svelte";
 </script>
 
+<!-- prettier-ignore -->
 <main class="container mx-auto flex flex-col gap-2 p-4">
     <Heading tag="h1" class="border-b p-2">首页</Heading>
 
