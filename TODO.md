@@ -1,16 +1,34 @@
 # TODO
 
-## Main Goals
+## Work in Progress
 
 - [x] port flowbite-svelte to version 1
+
 - [x] extract service handlers in API routes to `$lib/server/{API-group}.ts`
+
 - [x] replace `better-sqlite3` with `bun:sqlite`
+
 - [x] fix unsupported protocol 'bun:'
+
 - [x] add documentation for code
+
 - [x] replace fetcher with jsr:@bruce/rest-client
+
 - [x] add apidoc
+
 - [x] add documentation in index page
-- [ ] add tests (except for `$lib/api.ts` and `$lib/server/db_util.ts`)
+
+- [x] add tests
+
+  currently excepts:
+
+  - `$lib/api.ts`
+  - `$lib/server/db_util.ts` because of `$lib/server/db.ts`
+  - `$lib/server/rules.ts` because of `$lib/server/db.ts`
+
+  > see [Need Support](<#Need Support>) section
+
+## Planned
 
 ## Need Support
 
