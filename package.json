@@ -14,6 +14,7 @@
         "format": "prettier --write .",
         "lint": "prettier --check . && eslint .",
         "test": "vitest",
+        "coverage": "vitest run --coverage",
         "e2e": "playwright test"
     },
     "dependencies": {
@@ -42,6 +43,8 @@
         "flowbite-svelte-icons": "^2.1.1",
         "globals": "^16.1.0",
         "jsdom": "^26.1.0",
+        "memfs": "^4.17.1",
+        "msw": "^2.8.2",
         "prettier": "^3.5.3",
         "prettier-plugin-svelte": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.11",

@@ -30,9 +30,9 @@ const systemConfig: SystemConfig = {
  */
 export async function getConfig(): Promise<Config> {
     const configFile = join(process.cwd(), "config", "app.yaml");
-    const buffer = await readFile(configFile);
+    const content = await readFile(configFile, { encoding: "utf-8" });
 
-    const userConfig = load(buffer.toString()) as UserConfig;
+    const userConfig = load(content) as UserConfig;
 
     return { ...systemConfig, ...userConfig };
 }

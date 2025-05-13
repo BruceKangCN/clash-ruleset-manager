@@ -17,7 +17,7 @@ export async function getNodes() {
             const type = path.parse(filename).name;
 
             const filepath = path.join(nodes_dir, filename);
-            const content = (await readFile(filepath)).toString();
+            const content = await readFile(filepath, { encoding: "utf-8" });
 
             return { type, content };
         },
