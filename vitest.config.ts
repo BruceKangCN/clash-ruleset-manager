@@ -4,7 +4,6 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
     plugins: [sveltekit()],
     test: {
-        pool: "threads",
         environment: "node",
         setupFiles: ["vitest-setup.ts"],
         include: ["src/lib/**/*.{test,spec}.{js,ts}"],
@@ -20,7 +19,7 @@ export default defineConfig({
         },
 
         // to handle url-toolkit imports
-        //     depended by `@bruce/RESTClient`
+        //     depended by `@bruce/rest-client`
         //     depended by `NodeClient` and `RuleSetClient` in `src/lib/api.ts`
         server: {
             deps: {
