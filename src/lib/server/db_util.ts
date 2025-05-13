@@ -107,7 +107,7 @@ function tryGetRuleSet(name: string): RuleSet | null {
  * @param name ruleset name
  * @returns the already-existed or newly created ruleset record
  */
-export function getRuleSetRecord(order: number, name: string): RuleSet {
+function getRuleSetRecord(order: number, name: string): RuleSet {
     const existedRecord = tryGetRuleSet(name);
     if (existedRecord) {
         return existedRecord;
@@ -131,7 +131,7 @@ export function getRuleSetRecord(order: number, name: string): RuleSet {
  * @param content group content
  * @returns group record
  */
-export function createRuleGroup(
+function createRuleGroup(
     rulesetId: number,
     group: string,
     content: string,

@@ -1,7 +1,5 @@
 import { fs, vol } from "memfs";
-import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
-import { setupServer } from "msw/node";
-import { http } from "msw";
+import { beforeEach, vi } from "vitest";
 import { join } from "node:path";
 
 vi.mock("node:fs");
@@ -13,7 +11,6 @@ async function mockConfigDir() {
     // await mkdir("config", { recursive: true });
     const configDir = join(process.cwd(), "config");
     await mkdir(configDir, { recursive: true });
-    console.log({configDir});
 
     const configLines = [
         "groups:",
@@ -58,37 +55,9 @@ async function mockRulesDir() {
     await writeFile("data/rules/1_dir_ip.txt", ipLines.join("\n"));
 }
 
-// TODO: is this the correct way? it seems too redundant
-// setup test handlers for REST clients (in `$lib/api.ts`)
-const restHandlers = [
-    http.get("/api/nodes", async () => {
-        const mod = await import("./src/routes/api/nodes/+server");
-        return mod.GET();
-    }),
-    http.patch("/api/nodes/:group", async ({ params, request }) => {
-        const mod = await import("./src/routes/api/nodes/[group]/+server");
-        return mod.PATCH({ params, request });
-    }),
-    // TODO
-];
-
-const server = setupServer(...restHandlers);
-
-beforeAll(() => {
-    server.listen({ onUnhandledRequest: "error" });
-});
-
-afterAll(() => {
-    server.close();
-});
-
 beforeEach(async() => {
     vol.reset();
     await mockConfigDir();
     await mockNodesDir();
     await mockRulesDir();
-});
-
-afterEach(() => {
-    server.resetHandlers();
 });
