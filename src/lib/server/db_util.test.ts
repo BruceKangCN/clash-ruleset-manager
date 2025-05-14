@@ -8,4 +8,4 @@ describe("migration", () => {
 
         // TODO: check records exists
     });
-})
+});

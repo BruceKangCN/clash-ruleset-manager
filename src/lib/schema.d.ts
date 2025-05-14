@@ -1,14 +1,16 @@
-declare export interface RuleSet {
+declare interface RuleSet {
     id: number;
     /** order */
     ord: number;
     name: string;
 }
 
-declare export interface RuleGroup {
+declare interface RuleGroup {
     id: number;
     ruleset_id: number;
     /** group name */
     grp: string;
     content: string;
 }
+
+export { RuleSet, RuleGroup };

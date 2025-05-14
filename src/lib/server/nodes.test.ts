@@ -3,9 +3,9 @@ import { checkGroupExists, getNodes, updateGroupContent } from "./nodes";
 
 describe("Node groups", () => {
     it("exists", async () => {
-        expect(await checkGroupExists("sub")).toBe(true);
-        expect(await checkGroupExists("zz")).toBe(true);
-        expect(await checkGroupExists("foo")).toBe(false);
+        await expect(checkGroupExists("sub")).resolves.toBe(true);
+        await expect(checkGroupExists("zz")).resolves.toBe(true);
+        await expect(checkGroupExists("foo")).resolves.toBe(false);
     });
 
     it("can be gotten", async () => {
@@ -23,7 +23,7 @@ describe("Node groups", () => {
         const group = "zz";
         const content = "foo";
 
-        await updateGroupContent(group, content)
+        await updateGroupContent(group, content);
 
         const groups = await getNodes();
         const zz = groups.find((item) => item.type === group);

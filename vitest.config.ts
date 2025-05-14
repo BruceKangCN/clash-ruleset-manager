@@ -23,9 +23,7 @@ export default defineConfig({
         //     depended by `NodeClient` and `RuleSetClient` in `src/lib/api.ts`
         server: {
             deps: {
-                inline: [
-                    /\/node_modules\/@bruce\/rest-client/,
-                ],
+                inline: [/\/node_modules\/@bruce\/rest-client/],
             },
         },
     },

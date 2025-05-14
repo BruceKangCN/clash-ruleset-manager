@@ -20,13 +20,13 @@
 
 - [x] add tests
 
-  currently excepts:
+    currently excepts:
 
-  - `$lib/api.ts`
-  - `$lib/server/db_util.ts` because of `$lib/server/db.ts`
-  - `$lib/server/rules.ts` because of `$lib/server/db.ts`
+    - `$lib/api.ts`
+    - `$lib/server/db_util.ts` because of `$lib/server/db.ts`
+    - `$lib/server/rules.ts` because of `$lib/server/db.ts`
 
-  > see [Need Support](<#Need Support>) section
+    > see [Need Support](<#Need Support>) section
 
 ## Planned
 
@@ -34,14 +34,14 @@
 
 - [ ] replace TailwindCSS with UnoCSS
 
-  > currently buggy for Svelte 5
+    > currently buggy for Svelte 5
 
-  > Flowbite does not support UnoCSS currently
+    > Flowbite does not support UnoCSS currently
 
 - [ ] add test for `$lib/api.ts`.
 
-  > `vitest-fetch-mock` cannot handle relative URLs for now
+    > `vitest-fetch-mock` cannot handle relative URLs for now
 
 - [ ] add test for `$lib/server/db_util.ts`
 
-  > `db.ts` uses `bun:sqlite`, but bun seems to have issue running vitest
+    > `db.ts` uses `bun:sqlite`, but bun seems to have issue running vitest

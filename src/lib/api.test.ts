@@ -15,7 +15,7 @@ describe("Nodes Client", () => {
         patchMessage: {
             msg: "success",
         },
-    }
+    };
 
     beforeEach(() => {
         fetchMocker.resetMocks();
@@ -30,7 +30,7 @@ describe("Nodes Client", () => {
             }
 
             return json(mock.groups);
-        })
+        });
 
         const groups = await node.getAllGroups();
         expect(groups).toStrictEqual(mock.groups);
@@ -69,7 +69,7 @@ describe("Rules Client", () => {
             }
 
             return json(mock.rulesets);
-        })
+        });
 
         const actual = await rule.getAllRuleSets();
         expect(actual).toStrictEqual(mock.rulesets);

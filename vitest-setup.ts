@@ -12,12 +12,7 @@ async function mockConfigDir() {
     const configDir = join(process.cwd(), "config");
     await mkdir(configDir, { recursive: true });
 
-    const configLines = [
-        "groups:",
-        "  - ym",
-        "  - ip",
-        "",
-    ];
+    const configLines = ["groups:", "  - ym", "  - ip", ""];
     // await writeFile("config/app.yaml", configLines.join("\n"));
     const configPath = join(configDir, "app.yaml");
     await writeFile(configPath, configLines.join("\n"));
@@ -26,10 +21,7 @@ async function mockConfigDir() {
 async function mockNodesDir() {
     await mkdir("data/nodes", { recursive: true });
 
-    const subLines = [
-        "foo:https://foo.example.com/sub.txt",
-        "",
-    ];
+    const subLines = ["foo:https://foo.example.com/sub.txt", ""];
     await writeFile("data/nodes/sub.txt", subLines.join("\n"));
 
     const zzLines = [
@@ -42,20 +34,14 @@ async function mockNodesDir() {
 async function mockRulesDir() {
     await mkdir("data/rules", { recursive: true });
 
-    const domainLines = [
-        "foo.example.com",
-        "",
-    ];
+    const domainLines = ["foo.example.com", ""];
     await writeFile("data/rules/1_dir_ym.txt", domainLines.join("\n"));
 
-    const ipLines = [
-        "127.0.0.1",
-        "",
-    ];
+    const ipLines = ["127.0.0.1", ""];
     await writeFile("data/rules/1_dir_ip.txt", ipLines.join("\n"));
 }
 
-beforeEach(async() => {
+beforeEach(async () => {
     vol.reset();
     await mockConfigDir();
     await mockNodesDir();

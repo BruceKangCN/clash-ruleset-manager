@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { existsSync, lstatSync, readdirSync } from "node:fs";
+import { readFile, readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { getConfig } from "$lib/server/config";
 import type { RuleGroup, RuleSet } from "$lib/schema";
@@ -42,7 +41,9 @@ export async function migrate() {
                 const filename = `${order}_${name}_${group}.txt`;
                 const path = join(config.rules_dir, filename);
 
-                const isFile = existsSync(path) && lstatSync(path).isFile();
+                const isFile = await stat(path)
+                    .then((s) => s.isFile())
+                    .catch(() => false);
                 if (!isFile) {
                     // if file not exists or path is not a regular file, create
                     // record with empty content.
@@ -64,9 +65,8 @@ export async function migrate() {
     const re = new RegExp(`^(\\d+)_(.*?)_(${config.groups.join("|")})\\.txt`);
 
     // find all rule files in rules directory. parse information from filenames.
-    //
-    // use sync API for simplicity.
-    const records = readdirSync(config.rules_dir)
+    const entries = await readdir(config.rules_dir);
+    const records = entries
         .map((filename) => filename.match(re))
         .filter((match) => match !== null)
         .map((match) => {
@@ -131,11 +131,7 @@ function getRuleSetRecord(order: number, name: string): RuleSet {
  * @param content group content
  * @returns group record
  */
-function createRuleGroup(
-    rulesetId: number,
-    group: string,
-    content: string,
-) {
+function createRuleGroup(rulesetId: number, group: string, content: string) {
     const sql =
         "insert into rules (ruleset_id, grp, content) values (?, ?, ?) returning *;";
     const stmt = db.query<RuleGroup, [number, string, string]>(sql);
