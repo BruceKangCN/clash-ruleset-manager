@@ -3,6 +3,7 @@
         DarkMode,
         Navbar,
         NavBrand,
+        NavHamburger,
         NavLi,
         NavUl,
         Toast,
@@ -65,6 +66,8 @@
             <img src="/favicon.png" class="me-3 h-6" alt="Tauri Logo" />
             <span class="title">Clash 配置管理</span>
         </NavBrand>
+
+        <NavHamburger />
 
         <NavUl>
             <NavLi href="/rules">规则管理</NavLi>
